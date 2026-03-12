@@ -1,5 +1,3 @@
-
-
 #include<stdio.h>
 #include<string.h>
 typedef enum { LE, LA } Side;
@@ -38,3 +36,4 @@ int main(){
 
     return 0;
 }
+
