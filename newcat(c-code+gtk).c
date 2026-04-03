@@ -4,7 +4,7 @@
 #include <string.h>
 
 // ============================================================
-// PROPOSITION B — NESTED LINKED LIST (List of Lists)
+// PROPOSITION B â€” NESTED LINKED LIST (List of Lists)
 // Changes: menus collapse after successful actions
 // ============================================================
 
@@ -574,7 +574,7 @@ void activate(GtkApplication *app, gpointer data) {
     GtkWidget *win      = gtk_application_window_new(app);
     GtkWidget *stack    = gtk_stack_new();
     GtkWidget *switcher = gtk_stack_switcher_new();
-    gtk_window_set_title(GTK_WINDOW(win), "Wedding – Category Manager [Nested List]");
+    gtk_window_set_title(GTK_WINDOW(win), "Wedding â€“ Category Manager [Nested List]");
     gtk_window_set_default_size(GTK_WINDOW(win), 680, 520);
     gtk_stack_switcher_set_stack(GTK_STACK_SWITCHER(switcher), GTK_STACK(stack));
     gtk_widget_set_hexpand(stack, TRUE);
