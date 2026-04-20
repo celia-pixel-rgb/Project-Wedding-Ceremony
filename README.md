@@ -22,3 +22,14 @@ In order to run the code, you must open the "MSYS URT64" terminal and type the c
 If the code was successfully run, a ".exe" file appears just below your c-code in the folder.
 
 Open it, this is your csv file !
+
+NB 
+newperson.c is the pure c programming code for person management module with no GTK extensions.
+persk.c is the c programming code with GTK extensions. 
+
+newcategory.c is the pure c programming code for category management module with no GTK extensions
+newcat.c is the c programming code for category management with GTK extensions
+
+mainc-only.c is the pure c programming code that combines the person and category moodule without GTK extensions
+mainapp.c is the c programming tools combining person and category management modules, and having GTK extensions
+
