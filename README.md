@@ -33,3 +33,7 @@ newcat.c is the c programming code for category management with GTK extensions
 mainc-only.c is the pure c programming code that combines the person and category moodule without GTK extensions
 mainapp.c is the c programming tools combining person and category management modules, and having GTK extensions
 
+
+persk.exe is the csv file of perk.c
+newcat.exe is the csv file of newcat.s
+mainapp.exe is the csv file of mainapp.c
