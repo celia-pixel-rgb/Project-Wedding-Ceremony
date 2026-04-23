@@ -1,8 +1,8 @@
 # Project-Wedding-Ceremony
 
-Download and installation of GTK
+Simulation of a real-world wedding management system
 
-Simulation of a real-world wedding management system 
+DOWNLOAD AND INSTALLATION OF THE GTK LIBRARY
 
 We will guide you through all the steps yoou will have to undertake inorder to properly use our program, including the necessary libraries and commands to run it efficiently.
 
