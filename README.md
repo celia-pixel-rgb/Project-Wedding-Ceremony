@@ -26,6 +26,4 @@ If the code was successfully run, a ".exe" file appears just below your c-code i
 
 Open it, this is your executable file !
 
-- The csv file is generated autmoatically too!
-newcat.exe is the csv file of newcat.s
-mainapp.exe is the csv file of mainapp.c
+- The csv file is generated automatically too!
