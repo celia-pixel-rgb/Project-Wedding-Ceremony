@@ -27,3 +27,5 @@ If the code was successfully run, a ".exe" file appears just below your c-code i
 Open it, this is your executable file !
 
 - The csv file is generated automatically too!
+
+NB -Each module was made separate, inorder to see the modules interacting with each other, run the combinedmodules.c in devc++ or the gtkcombinedmodules.c in the MSYS2UCR64 terminal.
