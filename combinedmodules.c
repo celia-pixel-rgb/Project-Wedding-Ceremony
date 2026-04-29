@@ -26,11 +26,11 @@ static void print_module_info(void)
     printf("    Register, update and manage every wedding guest\n");
     printf("    with full validation and CSV persistence.\n");
     printf("    Features:\n");
-    printf("      ·  Add & save guests (CSV)\n"); // save guests to file
-    printf("      ·  Live field validation\n");   // input is checked live
-    printf("      ·  Update guest information\n"); //edit existing records
-    printf("      ·  Password-protected delete\n"); // delection nedds password for security and confidentiality
-    printf("      ·  Auto-refresh display\n");  //the screen automaticaly updates it self when an information is modified
+    printf("      Â·  Add & save guests (CSV)\n"); // save guests to file
+    printf("      Â·  Live field validation\n");   // input is checked live
+    printf("      Â·  Update guest information\n"); //edit existing records
+    printf("      Â·  Password-protected delete\n"); // delection nedds password for security and confidentiality
+    printf("      Â·  Auto-refresh display\n");  //the screen automaticaly updates it self when an information is modified
     printf("\n");
     
     //module 2 management
@@ -38,11 +38,11 @@ static void print_module_info(void)
     printf("    Organise guests into nested linked-list\n");
     printf("    categories such as VIP, Family, Friends.\n");
     printf("    Features:\n");
-    printf("      ·  Create named categories\n");   // define new group names
-    printf("      ·  Assign guests (nested list)\n");// link guests to a group
-    printf("      ·  Sort by guest count\n");            // order groups by size
-    printf("      ·  Update & delete categories\n");     // edit or remove groups
-    printf("      ·  Remove guests from category\n");    //unlink a guest from the group 
+    printf("      Â·  Create named categories\n");   // define new group names
+    printf("      Â·  Assign guests (nested list)\n");// link guests to a group
+    printf("      Â·  Sort by guest count\n");            // order groups by size
+    printf("      Â·  Update & delete categories\n");     // edit or remove groups
+    printf("      Â·  Remove guests from category\n");    //unlink a guest from the group 
     printf("\n");
     printf("  PASSWORD PROTECTED  -  group3wed!\n"); //the system is protected by a password to insure security and confidentiality
     printf("  Wedding Guest System  v1.0\n");        // this is the version number
@@ -57,11 +57,11 @@ static void print_module_info(void)
 // here we firstly have the lauch person management. here, the process wait until the "persk.c" file finishes then returns here and shows the lain menu again
 static void launch_person_management(void)
 {
-    printf("\n[Launcher] Opening Person Management (./persk)...\n");
+    printf("\n[Launcher] Opening Person Management (./person)...\n");
     int ret = system("./persk");
     if (ret != 0)                  // it is to chck whether the launch succeeded
     {
-        printf("[Launcher] Could not launch './persk'.\n");     // it is to inform the user that "persk.c could not be started
+        printf("[Launcher] Could not launch './person'.\n");     // it is to inform the user that "persk.c could not be started
         printf("  Make sure it is compiled:\n");        // help the user by giving the instruction and the exact gcc command needed to compile it  
         printf("    gcc persk-1.c -o persk\n");
     }
@@ -70,13 +70,13 @@ static void launch_person_management(void)
 // here is the secong lauch category management. his behavior is identical to the one of the lauch person management. here, the main process waits until the "newcat.c" file finishes. then it returns to the main menu
 static void launch_category_management(void)
 {
-    printf("\n[Launcher] Opening Category Management (./newcat)...\n");
+    printf("\n[Launcher] Opening Category Management (./category)...\n");
     int ret = system("./newcat");
     if (ret != 0)   // check whether the launch succeeded
     {
-        printf("[Launcher] Could not launch './newcat'.\n");    //it informs the user that the "newcat.c" could not be started
+        printf("[Launcher] Could not launch './category'.\n");    //it informs the user that the "newcat.c" could not be started
         printf("  Make sure it is compiled:\n");                // provide the exact gcc command needed to compile it so as to easy the work of the user
-        printf("    gcc newcat.c -o newcat\n");
+        printf("    gcc category.c -o category\n");
     }
 }
 
