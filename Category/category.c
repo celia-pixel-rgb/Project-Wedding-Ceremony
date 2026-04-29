@@ -1,7 +1,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
-#include<category.h>
+#include <category.h>
 
 static const char *GUEST_CSV = "pureperson.csv";
 static const char *PASSWORD  = "group3wed!";
