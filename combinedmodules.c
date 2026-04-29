@@ -63,7 +63,7 @@ static void launch_person_management(void)
     {
         printf("[Launcher] Could not launch './person'.\n");     // it is to inform the user that "persk.c could not be started
         printf("  Make sure it is compiled:\n");        // help the user by giving the instruction and the exact gcc command needed to compile it  
-        printf("    gcc persk-1.c -o persk\n");
+        printf("    gcc persk-1.c -o person\n");
     }
 }
 
