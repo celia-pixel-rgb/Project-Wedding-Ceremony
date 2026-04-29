@@ -117,10 +117,10 @@ static Category *create_category(const char *code) {
 }
 
 static void insert_category(Category **head, Category *new_cat) {
-    if (!new_cat) return;
+    if (!category) return;
     /* Insert at the head -- O(1), no need to walk the whole list */
-    new_cat->next = *head;
-    *head = new_cat;
+    category->next = *head;
+    *head = category;
 }
 
 static void delete_category(Category **head, int id) {
