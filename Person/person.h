@@ -1,3 +1,6 @@
+#ifndef PERSON_H
+#define PERSON_H
+
 typedef enum { GROOM, BRIDE, BOTH } Side;
 
 typedef struct {
