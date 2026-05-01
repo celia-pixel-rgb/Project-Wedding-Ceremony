@@ -106,29 +106,34 @@ void save_data(GtkButton *btn, gpointer data) {
 // show all guestt in the table format
 void show_data(GtkButton *btn, gpointer data) {
     const char *pw = gtk_editable_get_text(GTK_EDITABLE(display_password_entry));
-    if (strcmp(pw,PASSWORD)!=0) {                        //here, to verify if it is the user, we check the password
-        g_print("Incorrect password!\n");
+    if (strcmp(pw,PASSWORD)!=0) {                        //here, to verify if it is the user, we check the password registered is the one entered
+        g_print("Incorrect password!\n"); // print error if wrong
         return;
     }
 
-    FILE *f = fopen(CSV_FILE,"r");
-    GtkTextBuffer *buf = gtk_text_view_get_buffer(GTK_TEXT_VIEW(manager_text));
+    FILE *f = fopen(CSV_FILE,"r");   // Open the CSV file in read mode
+    GtkTextBuffer *buf = gtk_text_view_get_buffer(GTK_TEXT_VIEW(manager_text)); // Get the text buffer (where text will be displayed in the UI)
 
-    if (!f) {
-        gtk_text_buffer_set_text(buf,"No data.\n",-1);
+    // If file doesn't exist or can't be opened 
+	if (!f) {
+        gtk_text_buffer_set_text(buf,"No data.\n",-1); // display message
         return;
     }
 
-    char line[512];
-    Guest g;
+    char line[512]; // buffer to store each line read from file
+    Guest g; // struct to store guest data after parsing
+    
     //here, we create formatted table base on the ID, the name, the age, the status, the phone, the side and the available parking
     GString *content = g_string_new("| ID | Name             | Age | Status   | Phone       | Side  | Parking |\n");
+    
+     // Add table header separator
     g_string_append(content,"|----|-----------------|-----|----------|------------|-------|--------|\n");
 
-    while (fgets(line,sizeof(line),f)) {
+    while (fgets(line,sizeof(line),f)) // Read the file line by line using fgets 
+	 {
         if (sscanf(line,"%d,%99[^,],%d,%49[^,],%19[^,],%d,%9s",
-                   &g.id,g.name,&g.age,g.status,g.phone,&g.side,g.parking)!=7)
-            continue;
+                   &g.id,g.name,&g.age,g.status,g.phone,&g.side,g.parking)!=7) // it Convert CSV line into structured data
+            continue; // skip invalid lines
             
 // add row to table
         g_string_append_printf(content,"| %-2d | %-15s | %-3d | %-8s | %-10s | %-5s | %-6s |\n",
@@ -136,21 +141,29 @@ void show_data(GtkButton *btn, gpointer data) {
                                side_to_string(g.side),g.parking);
     }
 
-    fclose(f);
+    fclose(f); // close file
+    
+    // Display the built string in the text view
     gtk_text_buffer_set_text(buf,content->str,-1);
+    
+    // Free allocated memory for the string
     g_string_free(content,TRUE);
 }
 
 // ---------- AUTO REFRESH ----------
+// Function that keeps refreshing the displayed data
+// Used with a timer in GTK
 gboolean auto_refresh(gpointer data) {
-    show_data(NULL,NULL);
-    return TRUE;
+    show_data(NULL,NULL); // call display function
+    return TRUE; // TRUE means keep repeating
 }
 
 // ---------- LOAD GUEST FOR UPDATE ----------
+// This function loads an existing guest's data into the form for editing
 void load_guest_for_update(GtkButton *btn, gpointer data) {
     const char *pw = gtk_editable_get_text(GTK_EDITABLE(update_password_entry));
-    if (strcmp(pw, PASSWORD) != 0) {
+    if (strcmp(pw, PASSWORD) != 0)  // Check password
+	 {
         g_print("Incorrect password!\n");
         return;
     }
@@ -158,28 +171,39 @@ void load_guest_for_update(GtkButton *btn, gpointer data) {
 // here, all the possible researches are based on the number of ID because it is unique and it is the primary key.
     const char *id_text = gtk_editable_get_text(GTK_EDITABLE(update_id_entry));
     if (!strlen(id_text)) { g_print("Enter ID\n"); return; }
-    int target = atoi(id_text);
+    int target = atoi(id_text); // convert ID to integer
 
     FILE *f = fopen(CSV_FILE, "r");
-    if (!f) { g_print("File not found\n"); return; }
+    if (!f) { g_print("File not found\n");
+	 return;
+	  }
 
     Guest g;
     char line[512];
-    gboolean found = FALSE;
-
-    while (fgets(line, sizeof(line), f)) {
+    gboolean found = FALSE; // flag to check if guest exists
+    
+    
+// Loop through file to find matching ID
+    while (fgets(line, sizeof(line), f))  {
         if (sscanf(line, "%d,%99[^,],%d,%49[^,],%19[^,],%d,%9s",
                    &g.id, g.name, &g.age, g.status, g.phone, &g.side, g.parking) != 7)
             continue;
-
+            
+            
+// If ID matches
         if (g.id == target) {
+        	
+        	// Fill form fields with existing data
             gtk_editable_set_text(GTK_EDITABLE(update_name), g.name);
-            char age_buf[10]; sprintf(age_buf, "%d", g.age);
+            char age_buf[10]; sprintf(age_buf, "%d", g.age); // convert int to string
             gtk_editable_set_text(GTK_EDITABLE(update_age), age_buf);
             gtk_editable_set_text(GTK_EDITABLE(update_status), g.status);
             gtk_editable_set_text(GTK_EDITABLE(update_phone), g.phone);
+            
+            // Set dropdown selection for parking
             gtk_drop_down_set_selected(GTK_DROP_DOWN(update_parking), (strcmp(g.parking, "Yes") == 0) ? 0 : 1);
-
+            
+// Set radio buttons depending on side
             gtk_check_button_set_active(GTK_CHECK_BUTTON(update_radio_groom), g.side == GROOM);
             gtk_check_button_set_active(GTK_CHECK_BUTTON(update_radio_bride), g.side == BRIDE);
             gtk_check_button_set_active(GTK_CHECK_BUTTON(update_radio_both),  g.side == BOTH);
@@ -195,11 +219,12 @@ void load_guest_for_update(GtkButton *btn, gpointer data) {
         g_print("ID not found\n");
         return;
     }
-
+// Make update form visible
     gtk_widget_set_visible(update_fields_box, TRUE);
 }
 
-// ---------- POPULATE DELETE FIELDS ----------
+// ---------------- DELETE GUEST ----------------
+// Removes a guest from the CSV file based on ID
 void populate_delete_fields(GtkWidget *entry, gpointer data) {
     const char *id_text = gtk_editable_get_text(GTK_EDITABLE(delete_id_entry));
     int target = atoi(id_text);
@@ -208,8 +233,10 @@ void populate_delete_fields(GtkWidget *entry, gpointer data) {
     if (!f) return;
 
     Guest g;
+    // Create temporary file to rewrite data
+      FILE *tmp = fopen("temp.csv","w");
     char line[512];
-
+    Guest g;
     while (fgets(line,sizeof(line),f)) {
         if (sscanf(line,"%d,%99[^,],%d,%49[^,],%19[^,],%d,%9s",
                    &g.id,g.name,&g.age,g.status,g.phone,&g.side,g.parking)!=7)
@@ -587,3 +614,4 @@ int main(int argc,char **argv) {
     g_signal_connect(app,"activate",G_CALLBACK(activate),NULL);
     return g_application_run(G_APPLICATION(app),argc,argv);
 }
+
