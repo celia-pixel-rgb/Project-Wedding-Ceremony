@@ -287,7 +287,7 @@ The **GTK launcher** (`./launcher`) does the same graphically — it displays tw
 1. Open your browser and go to **https://www.msys2.org**
 2. Click the **Download** button to get the installer (`msys2-x86_64-YYYYMMDD.exe`)
 
-> 📸 *Screenshot: MSYS2 download page — click the green "Download" button*
+<img width="977" height="346" alt="image" src="https://github.com/user-attachments/assets/081d6c21-92ee-41fa-aa08-53c1891eb530" />
 
 #### Step 2 — Run the Installer
 
@@ -295,11 +295,14 @@ The **GTK launcher** (`./launcher`) does the same graphically — it displays tw
 2. Keep the default installation path `C:\msys64` — **do not change this**
 3. Click **Next** through the wizard, then **Finish**
 
+<img width="1123" height="321" alt="image" src="https://github.com/user-attachments/assets/d9b3e6c1-be47-40d7-878c-11b9564663cd" />
+
 > 📸 *Screenshot: MSYS2 installer welcome screen and default path selection*
 
 #### Step 3 — Open MSYS2 UCRT64 Terminal
 
 1. Open the **Start Menu** and search for **"MSYS2 UCRT64"**
+   
 2. Launch the **UCRT64** terminal (gold icon) — **not MINGW32 or MSYS**
 
 > 📸 *Screenshot: Start menu showing MSYS2 UCRT64 shortcut*
@@ -309,6 +312,7 @@ The **GTK launcher** (`./launcher`) does the same graphically — it displays tw
 ```bash
 pacman -Syu
 ```
+<img width="1123" height="321" alt="image" src="https://github.com/user-attachments/assets/44afd957-6fcb-4f4c-b7f7-92ec4145f66f" />
 
 When prompted `Proceed with installation? [Y/n]`, press **Enter**. The terminal will close — reopen it and run:
 
@@ -329,7 +333,7 @@ pacman -S mingw-w64-ucrt-x86_64-gtk4 \
 
 Press **Enter** when asked to confirm, then wait for all packages to install.
 
-> 📸 *Screenshot: pacman installing GTK 4 packages*
+<img width="1133" height="489" alt="image" src="https://github.com/user-attachments/assets/08345744-7d54-4ab7-89a3-d178bed58ec2" />
 
 #### Step 6 — Verify
 
@@ -337,10 +341,9 @@ Press **Enter** when asked to confirm, then wait for all packages to install.
 pkg-config --modversion gtk4
 gcc --version
 ```
-
 You should see `4.x.x` for GTK and a GCC version line.
 
-> 📸 *Screenshot: Terminal output confirming GTK 4 version number*
+<img width="1130" height="460" alt="image" src="https://github.com/user-attachments/assets/a3f8ed5a-f82b-4b33-8ba4-76bc9b6dad46" />
 
 ---
 
