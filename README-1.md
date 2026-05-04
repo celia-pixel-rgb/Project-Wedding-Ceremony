@@ -305,7 +305,8 @@ The **GTK launcher** (`./launcher`) does the same graphically — it displays tw
    
 2. Launch the **UCRT64** terminal (gold icon) — **not MINGW32 or MSYS**
 
-> 📸 *Screenshot: Start menu showing MSYS2 UCRT64 shortcut*
+<img width="832" height="170" alt="first msys2" src="https://github.com/user-attachments/assets/0e2686f2-aad5-4d58-b8b4-fdd96a9f5854" />
+
 
 #### Step 4 — Update MSYS2 Packages
 
@@ -320,7 +321,7 @@ When prompted `Proceed with installation? [Y/n]`, press **Enter**. The terminal 
 pacman -Su
 ```
 
-> 📸 *Screenshot: UCRT64 terminal showing pacman update progress*
+<img width="1103" height="432" alt="update pacman" src="https://github.com/user-attachments/assets/2950db45-e52b-4fb8-b167-f5d55ea4e619" />
 
 #### Step 5 — Install GTK 4, GCC, and pkg-config
 
@@ -464,6 +465,7 @@ The easiest way to use the system is to launch the GTK main launcher, which give
 This opens a dark-navy/gold themed window with two clickable cards:
 - **MODULE 01 — Person Management** → launches `./gtkperson`
 - **MODULE 02 — Category Management** → launches `./gtkcategory`
+- **MODULE 03 — Gift Management** → launches `./gift_gtk03`
 
 > 📸 *Screenshot: GTK launcher running with dark-navy/gold theme and module cards*
 
