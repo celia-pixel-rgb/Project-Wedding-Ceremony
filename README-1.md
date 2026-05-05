@@ -391,7 +391,7 @@ cd wedding-guest-system
 
 <img width="594" height="173" alt="image" src="https://github.com/user-attachments/assets/a8a28da8-e96c-49dc-a630-545dee889d69" />
 
-<img width="594" height="173" alt="image" src="https://github.com/user-attachments/assets/e7a488ec-cd23-4682-8bbc-1ad7271bdf9a" />
+<img width="700" height="130" alt="image" src="https://github.com/user-attachments/assets/e7a488ec-cd23-4682-8bbc-1ad7271bdf9a" />
 
 ### Step 2 — Navigate to the Project Directory
 
