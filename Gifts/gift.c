@@ -1,7 +1,7 @@
 /* this program is about the gift managemnt in a wedding ceremony based on the free choice of the guest among a list of variety possible gift*/
 #include <stdio.h>  
 #include <string.h>
-#include "gift_management.h"
+#include "gift.h"
 
 Gift gifts[MAX];
 int count = 0;  // this  count will help you in share the id, and to specifically know the number of gift or people that give a gift
