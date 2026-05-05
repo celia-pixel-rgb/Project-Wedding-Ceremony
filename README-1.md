@@ -293,7 +293,7 @@ The **GTK launcher** (`./launcher`) does the same graphically — it displays th
 
 1. Double-click the downloaded `.exe` file
 2. Keep the default installation path `C:\msys64` — **do not change this**
-   <img width="940" height="597" alt="specify path" src="https://github.com/user-attachments/assets/da96d271-510a-4863-bc70-3c8b14ed0c66" />
+   <img width="900" height="230" alt="specify path" src="https://github.com/user-attachments/assets/da96d271-510a-4863-bc70-3c8b14ed0c66" />
 
 3. Click **Next** through the wizard, then **Finish**
 
