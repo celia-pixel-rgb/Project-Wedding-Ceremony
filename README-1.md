@@ -287,7 +287,7 @@ The **GTK launcher** (`./launcher`) does the same graphically — it displays th
 1. Open your browser and go to **https://www.msys2.org**
 2. Click the **Download** button to get the installer (`msys2-x86_64-YYYYMMDD.exe`)
 
-<img width="977" height="346" alt="image" src="https://github.com/user-attachments/assets/081d6c21-92ee-41fa-aa08-53c1891eb530" />
+<img width="900" height="230" alt="image" src="https://github.com/user-attachments/assets/081d6c21-92ee-41fa-aa08-53c1891eb530" />
 
 #### Step 2 — Run the Installer
 
@@ -297,7 +297,7 @@ The **GTK launcher** (`./launcher`) does the same graphically — it displays th
 
 3. Click **Next** through the wizard, then **Finish**
 
-<img width="980" height="221" alt="image" src="https://github.com/user-attachments/assets/d9b3e6c1-be47-40d7-878c-11b9564663cd" />
+<img width="900" height="230" alt="image" src="https://github.com/user-attachments/assets/d9b3e6c1-be47-40d7-878c-11b9564663cd" />
 
 #### Step 3 — Open MSYS2 UCRT64 Terminal
 
@@ -313,7 +313,7 @@ The **GTK launcher** (`./launcher`) does the same graphically — it displays th
 ```bash
 pacman -Syu
 ```
-<img width="980" height="200" alt="image" src="https://github.com/user-attachments/assets/44afd957-6fcb-4f4c-b7f7-92ec4145f66f" />
+<img width="832" height="170" alt="image" src="https://github.com/user-attachments/assets/44afd957-6fcb-4f4c-b7f7-92ec4145f66f" />
 
 When prompted `Proceed with installation? [Y/n]`, press **Enter**. The terminal will close — reopen it and run:
 
@@ -321,7 +321,7 @@ When prompted `Proceed with installation? [Y/n]`, press **Enter**. The terminal 
 pacman -Su
 ```
 
-<img width="980" height="200" alt="update pacman" src="https://github.com/user-attachments/assets/2950db45-e52b-4fb8-b167-f5d55ea4e619" />
+<img width="832" height="170" alt="update pacman" src="https://github.com/user-attachments/assets/2950db45-e52b-4fb8-b167-f5d55ea4e619" />
 
 #### Step 5 — Install GTK 4, GCC, and pkg-config
 
@@ -334,7 +334,7 @@ pacman -S mingw-w64-ucrt-x86_64-gtk4 \
 
 Press **Enter** when asked to confirm, then wait for all packages to install.
 
-<img width="980" height="200" alt="image" src="https://github.com/user-attachments/assets/08345744-7d54-4ab7-89a3-d178bed58ec2" />
+<img width="832" height="170" alt="image" src="https://github.com/user-attachments/assets/08345744-7d54-4ab7-89a3-d178bed58ec2" />
 
 #### Step 6 — Verify
 
@@ -344,7 +344,7 @@ gcc --version
 ```
 You should see `4.x.x` for GTK and a GCC version line.
 
-<img width="980" height="300" alt="image" src="https://github.com/user-attachments/assets/a3f8ed5a-f82b-4b33-8ba4-76bc9b6dad46" />
+<img width="832" height="170" alt="image" src="https://github.com/user-attachments/assets/a3f8ed5a-f82b-4b33-8ba4-76bc9b6dad46" />
 
 ---
 
