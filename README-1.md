@@ -389,7 +389,9 @@ git clone https://github.com/your-username/wedding-guest-system.git
 cd wedding-guest-system
 ```
 
-> 📸 *Screenshot: Terminal after cloning and entering the project directory*
+<img width="594" height="173" alt="image" src="https://github.com/user-attachments/assets/a8a28da8-e96c-49dc-a630-545dee889d69" />
+
+<img width="594" height="173" alt="image" src="https://github.com/user-attachments/assets/e7a488ec-cd23-4682-8bbc-1ad7271bdf9a" />
 
 ### Step 2 — Navigate to the Project Directory
 
@@ -397,13 +399,14 @@ cd wedding-guest-system
 ```bash
 cd /c/Users/YourName/wedding-guest-system
 ```
+<img width="596" height="173" alt="image" src="https://github.com/user-attachments/assets/9420c0e4-d817-4656-9e50-5c158c7995a8" />
 
 **Linux:**
 ```bash
 cd ~/wedding-guest-system
 ```
 
-> 📸 *Screenshot: Terminal showing project directory with ls output*
+<img width="594" height="173" alt="goodgood make" src="https://github.com/user-attachments/assets/23512f88-09e4-494b-8ac3-bd7e5382c974" />
 
 ### Step 3 — Confirm the Structure
 
@@ -413,7 +416,7 @@ Run `ls` (Linux/MSYS2) to confirm folders are present:
 Person/   Category/   Gifts/   GTK/   Parking/   Report/   csv/   Makefile
 ```
 
-> 📸 *Screenshot: ls output showing correct folder layout*
+<img width="594" height="173" alt="goodgood make" src="https://github.com/user-attachments/assets/afa6c78c-3c30-4676-9825-109c01b8a6f6" />
 
 ### Step 4 — Build Everything
 
@@ -422,8 +425,7 @@ make
 ```
 
 This compiles all CLI binaries and all GTK 4 GUI binaries in one step.
-
-> 📸 *Screenshot: make output showing all targets compiled successfully*
+<img width="594" height="173" alt="good make!" src="https://github.com/user-attachments/assets/c48d1a40-d1eb-4548-a1ac-fcbfc4247899" />
 
 ### Step 5 — Available Targets
 
@@ -446,8 +448,7 @@ This compiles all CLI binaries and all GTK 4 GUI binaries in one step.
 ```bash
 make clean
 ```
-
-> 📸 *Screenshot: make clean removing all executables*
+<img width="594" height="173" alt="image" src="https://github.com/user-attachments/assets/f3cc2343-5c8f-4be3-afa5-0307c5177834" />
 
 ---
 
