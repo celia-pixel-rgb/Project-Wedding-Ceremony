@@ -313,7 +313,7 @@ The **GTK launcher** (`./launcher`) does the same graphically — it displays th
 ```bash
 pacman -Syu
 ```
-<img width="1123" height="321" alt="image" src="https://github.com/user-attachments/assets/44afd957-6fcb-4f4c-b7f7-92ec4145f66f" />
+<img width="980" height="200" alt="image" src="https://github.com/user-attachments/assets/44afd957-6fcb-4f4c-b7f7-92ec4145f66f" />
 
 When prompted `Proceed with installation? [Y/n]`, press **Enter**. The terminal will close — reopen it and run:
 
@@ -321,7 +321,7 @@ When prompted `Proceed with installation? [Y/n]`, press **Enter**. The terminal 
 pacman -Su
 ```
 
-<img width="1103" height="432" alt="update pacman" src="https://github.com/user-attachments/assets/2950db45-e52b-4fb8-b167-f5d55ea4e619" />
+<img width="980" height="200" alt="update pacman" src="https://github.com/user-attachments/assets/2950db45-e52b-4fb8-b167-f5d55ea4e619" />
 
 #### Step 5 — Install GTK 4, GCC, and pkg-config
 
@@ -334,7 +334,7 @@ pacman -S mingw-w64-ucrt-x86_64-gtk4 \
 
 Press **Enter** when asked to confirm, then wait for all packages to install.
 
-<img width="1133" height="489" alt="image" src="https://github.com/user-attachments/assets/08345744-7d54-4ab7-89a3-d178bed58ec2" />
+<img width="980" height="200" alt="image" src="https://github.com/user-attachments/assets/08345744-7d54-4ab7-89a3-d178bed58ec2" />
 
 #### Step 6 — Verify
 
@@ -344,7 +344,7 @@ gcc --version
 ```
 You should see `4.x.x` for GTK and a GCC version line.
 
-<img width="1130" height="460" alt="image" src="https://github.com/user-attachments/assets/a3f8ed5a-f82b-4b33-8ba4-76bc9b6dad46" />
+<img width="980" height="300" alt="image" src="https://github.com/user-attachments/assets/a3f8ed5a-f82b-4b33-8ba4-76bc9b6dad46" />
 
 ---
 
