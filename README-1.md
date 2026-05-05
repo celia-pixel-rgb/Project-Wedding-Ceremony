@@ -368,6 +368,8 @@ sudo apt install libgtk-4-dev gcc make pkg-config
 Press **Y** and Enter when prompted.
 <img width="793" height="196" alt="image" src="https://github.com/user-attachments/assets/ed4c485a-c227-41ab-9d3d-f14fd6fd1888" />
 
+<img width="793" height="196" alt="image" src="https://github.com/user-attachments/assets/314a4228-5816-4e66-9c8f-5366075ea831" />
+
 #### Step 3 — Verify
 
 ```bash
