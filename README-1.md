@@ -272,7 +272,7 @@ Follow this order when using the system for the first time:
 
 The **CLI launcher** (`./combinedmodules`) presents a unified text menu that lets the user choose to open the Person module or the Category module from a single entry point — without having to remember separate binary names. Under the hood it calls `system("./person")` or `system("./category")`.
 
-The **GTK launcher** (`./launcher`) does the same graphically — it displays two clickable module cards (Person Management and Category Management) in a dark-navy/gold themed window. Clicking a card launches the corresponding GTK GUI (`./gtkperson` or `./gtkcategory`) as a separate process. The Gift module (`./gift_gtk03`) can also be launched independently.
+The **GTK launcher** (`./launcher`) does the same graphically — it displays three clickable module cards (Person Management, Category Management and Gift Management) in a dark-navy/gold themed window. Clicking a card launches the corresponding GTK GUI (`./gtkperson` or `./gtkcategory`) as a separate process. T
 
 > ⚠️ **Important:** Because the Gift module reads both `persons.csv` and `category.csv`, you must have at least one registered guest and one assigned category before creating a gift record. Attempting to add a gift for an unregistered guest name will result in a lookup failure.
 
@@ -296,8 +296,6 @@ The **GTK launcher** (`./launcher`) does the same graphically — it displays tw
 3. Click **Next** through the wizard, then **Finish**
 
 <img width="1123" height="321" alt="image" src="https://github.com/user-attachments/assets/d9b3e6c1-be47-40d7-878c-11b9564663cd" />
-
-> 📸 *Screenshot: MSYS2 installer welcome screen and default path selection*
 
 #### Step 3 — Open MSYS2 UCRT64 Terminal
 
