@@ -297,7 +297,7 @@ The **GTK launcher** (`./launcher`) does the same graphically — it displays th
 
 3. Click **Next** through the wizard, then **Finish**
 
-<img width="1123" height="321" alt="image" src="https://github.com/user-attachments/assets/d9b3e6c1-be47-40d7-878c-11b9564663cd" />
+<img width="980" height="221" alt="image" src="https://github.com/user-attachments/assets/d9b3e6c1-be47-40d7-878c-11b9564663cd" />
 
 #### Step 3 — Open MSYS2 UCRT64 Terminal
 
