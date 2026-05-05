@@ -356,7 +356,8 @@ You should see `4.x.x` for GTK and a GCC version line.
 sudo apt update
 ```
 
-> 📸 *Screenshot: Terminal running apt update*
+<img width="793" height="196" alt="image" src="https://github.com/user-attachments/assets/1dd26c48-406a-4028-9f0e-254c7bb24dd1" />
+
 
 #### Step 2 — Install GTK 4 Development Libraries
 
@@ -365,8 +366,7 @@ sudo apt install libgtk-4-dev gcc make pkg-config
 ```
 
 Press **Y** and Enter when prompted.
-
-> 📸 *Screenshot: apt install downloading GTK 4 dev packages*
+<img width="793" height="196" alt="image" src="https://github.com/user-attachments/assets/ed4c485a-c227-41ab-9d3d-f14fd6fd1888" />
 
 #### Step 3 — Verify
 
@@ -374,8 +374,7 @@ Press **Y** and Enter when prompted.
 pkg-config --modversion gtk4
 gcc --version
 ```
-
-> 📸 *Screenshot: Terminal confirming GTK 4 and GCC versions*
+<img width="793" height="196" alt="image" src="https://github.com/user-attachments/assets/cb22e8a9-a5ec-4ec0-87e7-dec7d2b60ddd" />
 
 ---
 
