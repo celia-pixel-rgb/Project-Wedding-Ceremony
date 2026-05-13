@@ -1,451 +1,544 @@
-/* ============================================================================
- * WEDDING GUEST SYSTEM - MAIN LAUNCHER (GTK4 Graphical Interface Version)
- * ============================================================================
- * PURPOSE:
- *   This is a graphical (GUI) version of the wedding management launcher.
- *   Instead of a text menu, it displays a modern graphical interface with
- *   clickable cards for each module. It uses GTK4, a popular GUI toolkit.
- * EXECUTION:
- *   ./launcher
- * ========================================================================== */
-
+/* this program is used to dress up the guest space for the form, a space to display, update and delete a guest */
 #include <gtk/gtk.h>
+#include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+#include "person.h"
 
-/* ============================================================================
-   SECTION 1: CSS STYLING
-   ========================================================================== */
-static const char *APP_CSS =
-/* Window background */
-"window {"
-"  background-color: #0d1b2e;"
-"}"
-/* Banner */
-".banner {"
-"  background: linear-gradient(135deg, #091422 0%, #0d1b2e 60%, #112038 100%);"
-"  padding: 36px 48px 28px 48px;"
-"  border-bottom: 1px solid rgba(201,168,76,0.25);"
-"}"
-".banner-eyebrow {"
-"  color: #c9a84c;"
-"  font-size: 10px;"
-"  letter-spacing: 4px;"
-"  font-weight: bold;"
-"}"
-".banner-title {"
-"  color: #f5f0e8;"
-"  font-size: 30px;"
-"  font-weight: 300;"
-"  margin-top: 6px;"
-"}"
-".banner-sub {"
-"  color: rgba(245,240,232,0.45);"
-"  font-size: 12px;"
-"  margin-top: 4px;"
-"  letter-spacing: 1px;"
-"}"
-".gold-rule {"
-"  background: linear-gradient(90deg, transparent, #c9a84c, transparent);"
-"  min-height: 1px;"
-"  margin: 16px 0 0 0;"
-"}"
-/* Cards area */
-".cards-area {"
-"  padding: 36px 40px 36px 40px;"
-"  background-color: #0d1b2e;"
-"}"
-/* Module card */
-".module-card {"
-"  background: rgba(255,255,255,0.03);"
-"  border: 1px solid rgba(201,168,76,0.22);"
-"  border-radius: 6px;"
-"  padding: 28px 24px 24px 24px;"
-"  transition: all 180ms ease;"
-"}"
-".module-card:hover {"
-"  background: rgba(201,168,76,0.07);"
-"  border-color: #c9a84c;"
-"}"
-/* Card text */
-".card-tag {"
-"  color: #c9a84c;"
-"  font-size: 9px;"
-"  letter-spacing: 4px;"
-"  font-weight: bold;"
-"  margin-bottom: 4px;"
-"}"
-".card-title {"
-"  color: #f5f0e8;"
-"  font-size: 20px;"
-"  font-weight: 400;"
-"  margin-bottom: 8px;"
-"}"
-".card-desc {"
-"  color: rgba(245,240,232,0.50);"
-"  font-size: 12px;"
-"  line-height: 1.6;"
-"}"
-".card-feature {"
-"  color: rgba(245,240,232,0.38);"
-"  font-size: 11px;"
-"  margin-top: 2px;"
-"}"
-/* Launch button */
-".launch-btn {"
-"  background: #c9a84c;"
-"  color: #091422;"
-"  border-radius: 3px;"
-"  padding: 10px 26px;"
-"  font-size: 11px;"
-"  font-weight: bold;"
-"  letter-spacing: 2px;"
-"  border: none;"
-"  margin-top: 18px;"
-"  transition: all 150ms ease;"
-"}"
-".launch-btn:hover {"
-"  background: #e8c97e;"
-"}"
-".launch-btn:active {"
-"  background: #b8943e;"
-"}"
-/* Separator */
-".card-sep {"
-"  background: rgba(201,168,76,0.15);"
-"  min-width: 1px;"
-"  margin: 0 20px;"
-"}"
-/* Footer */
-".footer-bar {"
-"  background: #091422;"
-"  border-top: 1px solid rgba(201,168,76,0.12);"
-"  padding: 10px 40px;"
-"}"
-".footer-label {"
-"  color: rgba(245,240,232,0.18);"
-"  font-size: 10px;"
-"  letter-spacing: 2px;"
-"}"
-/* Icon */
-".card-icon {"
-"  font-size: 32px;"
-"  margin-bottom: 12px;"
-"}";
+// this csv file will be used for storage
+const char *CSV_FILE = "persons.csv";
 
-/* ============================================================================
-   SECTION 2: CALLBACK FUNCTIONS
-   ========================================================================== */
+// this password is to insure the security and the confidentiality of the file and the program
+const char *PASSWORD = "group3wed!";
 
-static void on_launch_person(GtkButton *btn, gpointer data)
-{
-    (void)btn;
-    (void)data;
+// these are the parameter for the form. it is about the guest information
+GtkWidget *name_entry, *age_entry, *status_entry, *phone_entry;
+GtkWidget *radio_groom, *radio_bride, *radio_both;
+GtkWidget *parking_dropdown;
 
-    if (g_spawn_command_line_async("./gtkperson", NULL)) {
-        g_print("[Launcher] Opened Person Management (./gtkperson)\n");
-    } else {
-        GtkWidget *dlg = gtk_message_dialog_new(
-            NULL,
-            GTK_DIALOG_MODAL,
-            GTK_MESSAGE_WARNING,
-            GTK_BUTTONS_OK,
-            "Could not launch './gtkperson'.\n\n"
-            "Make sure it is compiled:\n"
-            "  gcc gtkperson.c -o gtkperson $(pkg-config --cflags --libs gtk4)"
-        );
-        g_signal_connect(dlg, "response", G_CALLBACK(gtk_window_destroy), NULL);
-        gtk_widget_set_visible(dlg, TRUE);
+// to display a guest, update a guest and delete a guest, we need to enter the password
+GtkWidget *manager_text;  // display a guest
+GtkWidget *display_password_entry;
+
+GtkWidget *update_id_entry, *update_name, *update_age, *update_status, *update_phone;  //update a guest information
+GtkWidget *update_radio_groom, *update_radio_bride, *update_radio_both;
+GtkWidget *update_parking;
+GtkWidget *update_password_entry;
+GtkWidget *update_fields_box;
+
+GtkWidget *delete_id_entry; //delete a guest
+GtkWidget *delete_password_entry;
+
+// now we get the next available ID from the CSV file
+int get_next_id() {
+    FILE *file = fopen(CSV_FILE, "r");
+    if (!file) return 0;
+
+    int max_id = -1, id;
+    char line[512];
+
+    while (fgets(line, sizeof(line), file)) {
+        if (sscanf(line, "%d,", &id) == 1 && id > max_id)
+            max_id = id;
     }
+
+    fclose(file);
+    return max_id + 1;
 }
 
-static void on_launch_category(GtkButton *btn, gpointer data)
-{
-    (void)btn;
-    (void)data;
+// determine the selected side like: groom, bride, both
+Side get_side(GtkWidget *groom, GtkWidget *bride) {
+    if (gtk_check_button_get_active(GTK_CHECK_BUTTON(groom))) return GROOM;
+    if (gtk_check_button_get_active(GTK_CHECK_BUTTON(bride))) return BRIDE;
+    return BOTH;
+}
+// now we return this enum to string 
 
-    if (g_spawn_command_line_async("./gtkcategory", NULL)) {
-        g_print("[Launcher] Opened Category Management (./gtkcategory)\n");
-    } else {
-        GtkWidget *dlg = gtk_message_dialog_new(
-            NULL,
-            GTK_DIALOG_MODAL,
-            GTK_MESSAGE_WARNING,
-            GTK_BUTTONS_OK,
-            "Could not launch './gtkcategory'.\n\n"
-            "Make sure it is compiled:\n"
-            "  gcc gtkcategory.c -o gtkcategory $(pkg-config --cflags --libs gtk4)"
-        );
-        g_signal_connect(dlg, "response", G_CALLBACK(gtk_window_destroy), NULL);
-        gtk_widget_set_visible(dlg, TRUE);
+// save new guest into the CSV file
+void save_data(GtkButton *btn, gpointer data) {
+    Guest g; 
+    const char *name = gtk_editable_get_text(GTK_EDITABLE(name_entry)); // get input values
+    const char *age_str = gtk_editable_get_text(GTK_EDITABLE(age_entry));
+
+    if (!strlen(name) || !strlen(age_str)) {
+        g_print("Fill required fields\n");
+        return;
     }
+
+    int age = atoi(age_str);
+    if (age <= 0) {
+        g_print("Invalid age\n"); // this is used to insure that the age entered by the user is not negative
+        return;
+    }
+
+    g.id = get_next_id();
+    g.age = age;
+    strncpy(g.name, name, sizeof(g.name)-1); g.name[sizeof(g.name)-1]='\0';
+    strncpy(g.status, gtk_editable_get_text(GTK_EDITABLE(status_entry)), sizeof(g.status)-1); g.status[sizeof(g.status)-1]='\0';
+    strncpy(g.phone, gtk_editable_get_text(GTK_EDITABLE(phone_entry)), sizeof(g.phone)-1); g.phone[sizeof(g.phone)-1]='\0';
+
+    g.side = get_side(radio_groom, radio_bride);
+    
+// this one is now for the parking selection
+    int p = gtk_drop_down_get_selected(GTK_DROP_DOWN(parking_dropdown));
+    strncpy(g.parking, (p==0)?"Yes":"No", sizeof(g.parking)-1); g.parking[sizeof(g.parking)-1]='\0';
+
+    FILE *f = fopen(CSV_FILE, "a");
+    if (!f) { g_print("File error\n"); return; }
+
+    fprintf(f,"%d,%s,%d,%s,%s,%d,%s\n",
+            g.id,g.name,g.age,g.status,g.phone,g.side,g.parking);            // here, we save the guest information to csv
+
+    fclose(f);
+
+    gtk_editable_set_text(GTK_EDITABLE(name_entry),"");
+    gtk_editable_set_text(GTK_EDITABLE(age_entry),"");
+    gtk_editable_set_text(GTK_EDITABLE(status_entry),"");
+    gtk_editable_set_text(GTK_EDITABLE(phone_entry),"");
+
+    g_print("Saved ID: %d\n",g.id);
 }
 
-static void on_launch_gift(GtkButton *btn, gpointer data)
-{
-    (void)btn;
-    (void)data;
-
-    if (g_spawn_command_line_async("./gift_gtk03", NULL)) {
-        g_print("[Launcher] Opened Gift Management (./gift_gtk03)\n");
-    } else {
-        GtkWidget *dlg = gtk_message_dialog_new(
-            NULL,
-            GTK_DIALOG_MODAL,
-            GTK_MESSAGE_WARNING,
-            GTK_BUTTONS_OK,
-            "Could not launch './gift_gtk03'.\n\n"
-            "Make sure it is compiled:\n"
-            "  gcc gift_gtk03.c -o gift_gtk03 $(pkg-config --cflags --libs gtk4) -lm"
-        );
-        g_signal_connect(dlg, "response", G_CALLBACK(gtk_window_destroy), NULL);
-        gtk_widget_set_visible(dlg, TRUE);
+// -----DISPLAY----
+// show all guestt in the table format
+void show_data(GtkButton *btn, gpointer data) {
+    const char *pw = gtk_editable_get_text(GTK_EDITABLE(display_password_entry));
+    if (strcmp(pw,PASSWORD)!=0) {                        //here, to verify if it is the user, we check the password
+        g_print("Incorrect password!\n");
+        return;
     }
+
+    FILE *f = fopen(CSV_FILE,"r");
+    GtkTextBuffer *buf = gtk_text_view_get_buffer(GTK_TEXT_VIEW(manager_text));
+
+    if (!f) {
+        gtk_text_buffer_set_text(buf,"No data.\n",-1);
+        return;
+    }
+
+    char line[512];
+    Guest g;
+    //here, we create formatted table base on the ID, the name, the age, the status, the phone, the side and the available parking
+    GString *content = g_string_new("| ID | Name             | Age | Status   | Phone       | Side  | Parking |\n");
+    g_string_append(content,"|----|-----------------|-----|----------|------------|-------|--------|\n");
+
+    while (fgets(line,sizeof(line),f)) {
+        if (sscanf(line,"%d,%99[^,],%d,%49[^,],%19[^,],%d,%9s",
+                   &g.id,g.name,&g.age,g.status,g.phone,&g.side,g.parking)!=7)
+            continue;
+            
+// add row to table
+        g_string_append_printf(content,"| %-2d | %-15s | %-3d | %-8s | %-10s | %-5s | %-6s |\n",
+                               g.id,g.name,g.age,g.status,g.phone,
+                               side_to_string(g.side),g.parking);
+    }
+
+    fclose(f);
+    gtk_text_buffer_set_text(buf,content->str,-1);
+    g_string_free(content,TRUE);
 }
 
-/* ============================================================================
-   SECTION 3: UI CONSTRUCTION HELPER
-   ========================================================================== */
-
-static GtkWidget *make_card(
-    const char *icon_utf8,
-    const char *module_tag,
-    const char *title,
-    const char *description,
-    const char *features[],
-    GCallback   launch_cb)
-{
-    /* -- Main card container -- */
-    GtkWidget *card = gtk_box_new(GTK_ORIENTATION_VERTICAL, 0);
-    gtk_widget_add_css_class(card, "module-card");
-    gtk_widget_set_hexpand(card, TRUE);
-
-    /* -- Icon -- */
-    GtkWidget *icon = gtk_label_new(icon_utf8);
-    gtk_widget_add_css_class(icon, "card-icon");
-    gtk_widget_set_halign(icon, GTK_ALIGN_START);
-    gtk_box_append(GTK_BOX(card), icon);
-
-    /* -- Module tag -- */
-    GtkWidget *tag = gtk_label_new(module_tag);
-    gtk_widget_add_css_class(tag, "card-tag");
-    gtk_widget_set_halign(tag, GTK_ALIGN_START);
-    gtk_box_append(GTK_BOX(card), tag);
-
-    /* -- Title -- */
-    GtkWidget *ttl = gtk_label_new(title);
-    gtk_widget_add_css_class(ttl, "card-title");
-    gtk_widget_set_halign(ttl, GTK_ALIGN_START);
-    gtk_label_set_xalign(GTK_LABEL(ttl), 0.0f);
-    gtk_box_append(GTK_BOX(card), ttl);
-
-    /* -- Decorative line -- */
-    GtkWidget *sep = gtk_separator_new(GTK_ORIENTATION_HORIZONTAL);
-    gtk_widget_add_css_class(sep, "gold-rule");
-    gtk_box_append(GTK_BOX(card), sep);
-
-    /* -- Description -- */
-    GtkWidget *desc = gtk_label_new(description);
-    gtk_widget_add_css_class(desc, "card-desc");
-    gtk_widget_set_halign(desc, GTK_ALIGN_START);
-    gtk_label_set_xalign(GTK_LABEL(desc), 0.0f);
-    gtk_label_set_wrap(GTK_LABEL(desc), TRUE);
-    gtk_label_set_max_width_chars(GTK_LABEL(desc), 32);
-    gtk_widget_set_margin_top(desc, 12);
-    gtk_box_append(GTK_BOX(card), desc);
-
-    /* -- Feature list -- */
-    GtkWidget *feat_box = gtk_box_new(GTK_ORIENTATION_VERTICAL, 2);
-    gtk_widget_set_margin_top(feat_box, 10);
-
-    for (int i = 0; features[i] != NULL; i++) {
-        char buf[128];
-        snprintf(buf, sizeof(buf), "›  %s", features[i]);
-        GtkWidget *fl = gtk_label_new(buf);
-        gtk_widget_add_css_class(fl, "card-feature");
-        gtk_widget_set_halign(fl, GTK_ALIGN_START);
-        gtk_box_append(GTK_BOX(feat_box), fl);
-    }
-    gtk_box_append(GTK_BOX(card), feat_box);
-
-    /* -- Launch button -- */
-    GtkWidget *btn = gtk_button_new_with_label("OPEN MODULE");
-    gtk_widget_add_css_class(btn, "launch-btn");
-    gtk_widget_set_halign(btn, GTK_ALIGN_START);
-    g_signal_connect(btn, "clicked", launch_cb, NULL);
-    gtk_box_append(GTK_BOX(card), btn);
-
-    return card;
+// ---------- AUTO REFRESH ----------
+gboolean auto_refresh(gpointer data) {
+    show_data(NULL,NULL);
+    return TRUE;
 }
 
-/* ============================================================================
-   SECTION 4: APPLICATION ACTIVATION
-   ========================================================================== */
+// ---------- LOAD GUEST FOR UPDATE ----------
+void load_guest_for_update(GtkButton *btn, gpointer data) {
+    const char *pw = gtk_editable_get_text(GTK_EDITABLE(update_password_entry));
+    if (strcmp(pw, PASSWORD) != 0) {
+        g_print("Incorrect password!\n");
+        return;
+    }
+    
+// here, all the possible researches are based on the number of ID because it is unique and it is the primary key.
+    const char *id_text = gtk_editable_get_text(GTK_EDITABLE(update_id_entry));
+    if (!strlen(id_text)) { g_print("Enter ID\n"); return; }
+    int target = atoi(id_text);
 
-static void activate(GtkApplication *app, gpointer user_data)
-{
-    (void)user_data;
+    FILE *f = fopen(CSV_FILE, "r");
+    if (!f) { g_print("File not found\n"); return; }
 
-    /* -- Load CSS -- */
-    GtkCssProvider *provider = gtk_css_provider_new();
-    gtk_css_provider_load_from_string(provider, APP_CSS);
-    gtk_style_context_add_provider_for_display(
-        gdk_display_get_default(),
-        GTK_STYLE_PROVIDER(provider),
-        GTK_STYLE_PROVIDER_PRIORITY_APPLICATION);
-    g_object_unref(provider);
+    Guest g;
+    char line[512];
+    gboolean found = FALSE;
 
-    /* -- Main window -- */
+    while (fgets(line, sizeof(line), f)) {
+        if (sscanf(line, "%d,%99[^,],%d,%49[^,],%19[^,],%d,%9s",
+                   &g.id, g.name, &g.age, g.status, g.phone, &g.side, g.parking) != 7)
+            continue;
+
+        if (g.id == target) {
+            gtk_editable_set_text(GTK_EDITABLE(update_name), g.name);
+            char age_buf[10]; sprintf(age_buf, "%d", g.age);
+            gtk_editable_set_text(GTK_EDITABLE(update_age), age_buf);
+            gtk_editable_set_text(GTK_EDITABLE(update_status), g.status);
+            gtk_editable_set_text(GTK_EDITABLE(update_phone), g.phone);
+            gtk_drop_down_set_selected(GTK_DROP_DOWN(update_parking), (strcmp(g.parking, "Yes") == 0) ? 0 : 1);
+
+            gtk_check_button_set_active(GTK_CHECK_BUTTON(update_radio_groom), g.side == GROOM);
+            gtk_check_button_set_active(GTK_CHECK_BUTTON(update_radio_bride), g.side == BRIDE);
+            gtk_check_button_set_active(GTK_CHECK_BUTTON(update_radio_both),  g.side == BOTH);
+
+            found = TRUE;
+            break;
+        }
+    }
+
+    fclose(f);
+
+    if (!found) {
+        g_print("ID not found\n");
+        return;
+    }
+
+    gtk_widget_set_visible(update_fields_box, TRUE);
+}
+
+// ---------- POPULATE DELETE FIELDS ----------
+void populate_delete_fields(GtkWidget *entry, gpointer data) {
+    const char *id_text = gtk_editable_get_text(GTK_EDITABLE(delete_id_entry));
+    int target = atoi(id_text);
+
+    FILE *f = fopen(CSV_FILE,"r");
+    if (!f) return;
+
+    Guest g;
+    char line[512];
+
+    while (fgets(line,sizeof(line),f)) {
+        if (sscanf(line,"%d,%99[^,],%d,%49[^,],%19[^,],%d,%9s",
+                   &g.id,g.name,&g.age,g.status,g.phone,&g.side,g.parking)!=7)
+            continue;
+
+        if (g.id==target) {
+            g_print("ID %d -> Name: %s, Age: %d, Status: %s, Phone: %s, Side: %s, Parking: %s\n",
+                    g.id,g.name,g.age,g.status,g.phone,side_to_string(g.side),g.parking);
+            break;
+        }
+    }
+
+    fclose(f);
+}
+
+// to delete the guest 
+void delete_guest(GtkButton *btn, gpointer data) {
+    const char *pw = gtk_editable_get_text(GTK_EDITABLE(delete_password_entry));
+    if (strcmp(pw,PASSWORD)!=0) { g_print("Incorrect password!\n"); return; }   // to insure the security of the file and their confidentiality, we need to enter the passsword
+
+    const char *id_text = gtk_editable_get_text(GTK_EDITABLE(delete_id_entry));
+    if (!strlen(id_text)) { g_print("Enter ID\n"); return; }  // after the validated password, we delete the guest or his information based on the Id of that guest
+
+    int target = atoi(id_text);
+    gboolean found = FALSE;
+
+    FILE *f = fopen(CSV_FILE,"r");
+    if (!f) { g_print("File not found\n"); return; }
+
+    FILE *tmp = fopen("temp.csv","w");
+    if (!tmp) return;
+
+    char line[512];
+    Guest g;
+
+    while (fgets(line,sizeof(line),f)) {
+        if (sscanf(line,"%d,%99[^,],%d,%49[^,],%19[^,],%d,%9s",
+                   &g.id,g.name,&g.age,g.status,g.phone,&g.side,g.parking)!=7)
+            continue;
+
+        if (g.id!=target)
+            fprintf(tmp,"%d,%s,%d,%s,%s,%d,%s\n",
+                    g.id,g.name,g.age,g.status,g.phone,g.side,g.parking);
+        else found=TRUE;
+    }
+
+    fclose(f);
+    fclose(tmp);
+
+    remove(CSV_FILE);
+    rename("temp.csv",CSV_FILE);
+
+    if (!found) g_print("ID not found\n");
+    else g_print("Deleted ID: %d\n",target);
+}
+
+// ---------- UPDATE ----------
+void update_guest(GtkButton *btn, gpointer data) {
+    const char *pw = gtk_editable_get_text(GTK_EDITABLE(update_password_entry));
+    if (strcmp(pw,PASSWORD)!=0) { g_print("Incorrect password!\n"); return; }            // to insure the security of the file and their confidentiality, we need to enter the passsword
+
+    const char *id_text = gtk_editable_get_text(GTK_EDITABLE(update_id_entry));
+    if (!strlen(id_text)) { g_print("Enter ID\n"); return; }          // after the validated password, we delete the guest or his information based on the Id of that guest
+
+    int target = atoi(id_text);
+    gboolean found = FALSE;
+
+    FILE *f = fopen(CSV_FILE,"r");
+    if (!f) { g_print("File not found\n"); return; }
+
+    FILE *tmp = fopen("temp.csv","w");
+    if (!tmp) return;
+
+    char line[512];
+    Guest g;
+
+    while (fgets(line,sizeof(line),f)) {
+        if (sscanf(line,"%d,%99[^,],%d,%49[^,],%19[^,],%d,%9s",
+                   &g.id,g.name,&g.age,g.status,g.phone,&g.side,g.parking)!=7)
+            continue;
+
+        if (g.id==target) {
+            const char *name = gtk_editable_get_text(GTK_EDITABLE(update_name));
+            const char *status = gtk_editable_get_text(GTK_EDITABLE(update_status));
+            const char *phone = gtk_editable_get_text(GTK_EDITABLE(update_phone));
+            const char *age_text = gtk_editable_get_text(GTK_EDITABLE(update_age));
+
+            if (strlen(name)) strncpy(g.name,name,sizeof(g.name)-1);
+            if (strlen(status)) strncpy(g.status,status,sizeof(g.status)-1);
+            if (strlen(phone)) strncpy(g.phone,phone,sizeof(g.phone)-1);
+
+            int age = atoi(age_text);
+            if (age>0) g.age=age;
+
+            int p = gtk_drop_down_get_selected(GTK_DROP_DOWN(update_parking));
+            strncpy(g.parking,(p==0)?"Yes":"No",sizeof(g.parking)-1);
+
+            g.side = get_side(update_radio_groom, update_radio_bride);
+
+            found=TRUE;
+        }
+
+        fprintf(tmp,"%d,%s,%d,%s,%s,%d,%s\n",
+                g.id,g.name,g.age,g.status,g.phone,g.side,g.parking);
+    }
+
+    fclose(f);
+    fclose(tmp);
+
+    remove(CSV_FILE);
+    rename("temp.csv",CSV_FILE);
+
+    if (!found) g_print("ID not found\n");
+    else g_print("Updated ID: %d\n",target);
+}
+
+// ---------- FORM PAGE ----------
+// this is about the presentation of the guest interface. 
+GtkWidget* create_form_page() {
+    GtkWidget *box = gtk_box_new(GTK_ORIENTATION_VERTICAL,5);
+
+    name_entry = gtk_entry_new();
+    age_entry = gtk_entry_new();
+    status_entry = gtk_entry_new();
+    phone_entry = gtk_entry_new();
+
+    gtk_entry_set_placeholder_text(GTK_ENTRY(name_entry),"Full Name"); 
+    gtk_entry_set_placeholder_text(GTK_ENTRY(age_entry),"17");
+    gtk_entry_set_placeholder_text(GTK_ENTRY(status_entry),"Single / Married / Divorced");  // this is used to give the different possibilities of status
+    gtk_entry_set_placeholder_text(GTK_ENTRY(phone_entry),"650123456");                // thsi is used to give an example of how the phone number can be written regarding the Cameroon norms
+
+    GtkStringList *list = gtk_string_list_new(NULL);
+    gtk_string_list_append(list,"Yes");
+    gtk_string_list_append(list,"No");
+
+    parking_dropdown = gtk_drop_down_new(G_LIST_MODEL(list),NULL);
+    gtk_drop_down_set_selected(GTK_DROP_DOWN(parking_dropdown),1);    // this one is about the parking availability
+    g_object_unref(list);
+// this is about the side of the guest. here, he/she can be either from the groom, or bride or both
+    radio_groom = gtk_check_button_new_with_label("Groom");
+    radio_bride = gtk_check_button_new_with_label("Bride");
+    radio_both = gtk_check_button_new_with_label("Both");
+
+    gtk_check_button_set_group(GTK_CHECK_BUTTON(radio_bride),GTK_CHECK_BUTTON(radio_groom));
+    gtk_check_button_set_group(GTK_CHECK_BUTTON(radio_both),GTK_CHECK_BUTTON(radio_groom));
+    gtk_check_button_set_active(GTK_CHECK_BUTTON(radio_groom),TRUE);
+
+    GtkWidget *btn = gtk_button_new_with_label("Save");
+    g_signal_connect(btn,"clicked",G_CALLBACK(save_data),NULL);
+
+    GtkWidget *row;
+
+    row = gtk_box_new(GTK_ORIENTATION_HORIZONTAL,5);
+    gtk_box_append(GTK_BOX(row), gtk_label_new("Full Name"));
+    gtk_box_append(GTK_BOX(row), name_entry);
+    gtk_box_append(GTK_BOX(box), row);
+
+    row = gtk_box_new(GTK_ORIENTATION_HORIZONTAL,5);
+    gtk_box_append(GTK_BOX(row), gtk_label_new("Age"));
+    gtk_box_append(GTK_BOX(row), age_entry);
+    gtk_box_append(GTK_BOX(box), row);
+
+    row = gtk_box_new(GTK_ORIENTATION_HORIZONTAL,5);
+    gtk_box_append(GTK_BOX(row), gtk_label_new("Status"));
+    gtk_box_append(GTK_BOX(row), status_entry);
+    gtk_box_append(GTK_BOX(box), row);
+
+    row = gtk_box_new(GTK_ORIENTATION_HORIZONTAL,5);
+    gtk_box_append(GTK_BOX(row), gtk_label_new("Phone"));
+    gtk_box_append(GTK_BOX(row), phone_entry);
+    gtk_box_append(GTK_BOX(box), row);
+
+    row = gtk_box_new(GTK_ORIENTATION_HORIZONTAL,5);
+    gtk_box_append(GTK_BOX(row), gtk_label_new("Parking"));
+    gtk_box_append(GTK_BOX(row), parking_dropdown);
+    gtk_box_append(GTK_BOX(box), row);
+
+    row = gtk_box_new(GTK_ORIENTATION_HORIZONTAL,5);
+    gtk_box_append(GTK_BOX(row), gtk_label_new("Side"));
+    gtk_box_append(GTK_BOX(row), radio_groom);
+    gtk_box_append(GTK_BOX(row), radio_bride);
+    gtk_box_append(GTK_BOX(row), radio_both);
+    gtk_box_append(GTK_BOX(box), row);
+
+    gtk_box_append(GTK_BOX(box), btn);
+
+    return box;
+}
+
+// ---------- DISPLAY PAGE ----------
+// this is about the presentation of the displayed page on the file
+GtkWidget* create_display_page() {
+    GtkWidget *box = gtk_box_new(GTK_ORIENTATION_VERTICAL,5);
+
+    display_password_entry = gtk_entry_new();
+    gtk_entry_set_placeholder_text(GTK_ENTRY(display_password_entry),"Enter password");
+
+    GtkWidget *btn = gtk_button_new_with_label("Refresh");
+    g_signal_connect(btn,"clicked",G_CALLBACK(show_data),NULL);
+
+    manager_text = gtk_text_view_new();
+    gtk_text_view_set_editable(GTK_TEXT_VIEW(manager_text),FALSE);
+
+    gtk_box_append(GTK_BOX(box), display_password_entry);
+    gtk_box_append(GTK_BOX(box),btn);
+    gtk_box_append(GTK_BOX(box),manager_text);
+
+    g_timeout_add(2000, auto_refresh, NULL);
+
+    return box;
+}
+
+// ---------- DELETE PAGE ----------
+// this is about the presentation of the deleted page on the file
+GtkWidget* create_delete_page() {
+    GtkWidget *box = gtk_box_new(GTK_ORIENTATION_VERTICAL,5);
+
+    delete_id_entry = gtk_entry_new();
+    gtk_entry_set_placeholder_text(GTK_ENTRY(delete_id_entry),"Enter ID");
+    g_signal_connect(delete_id_entry,"changed",G_CALLBACK(populate_delete_fields),NULL);
+
+    delete_password_entry = gtk_entry_new();
+    gtk_entry_set_placeholder_text(GTK_ENTRY(delete_password_entry),"Enter password");
+
+    GtkWidget *btn = gtk_button_new_with_label("Delete");
+    g_signal_connect(btn,"clicked",G_CALLBACK(delete_guest),NULL);
+
+    gtk_box_append(GTK_BOX(box),delete_id_entry);
+    gtk_box_append(GTK_BOX(box),delete_password_entry);
+    gtk_box_append(GTK_BOX(box),btn);
+
+    return box;
+}
+
+// ---------- UPDATE PAGE ----------
+// this is about the presentation of the updated page on the file. here, they can either update the person entirely or the specific information
+// when it comes with the information, it can: the name, the age, the phone number, the status, the side or even the parking
+GtkWidget* create_update_page() {
+    GtkWidget *box = gtk_box_new(GTK_ORIENTATION_VERTICAL, 5);
+
+    update_id_entry = gtk_entry_new();
+    gtk_entry_set_placeholder_text(GTK_ENTRY(update_id_entry), "ID to update");
+
+    update_password_entry = gtk_entry_new();
+    gtk_entry_set_placeholder_text(GTK_ENTRY(update_password_entry), "Enter password");
+    gtk_entry_set_visibility(GTK_ENTRY(update_password_entry), FALSE);
+
+    GtkWidget *load_btn = gtk_button_new_with_label("Load Guest");
+    g_signal_connect(load_btn, "clicked", G_CALLBACK(load_guest_for_update), NULL);
+
+    gtk_box_append(GTK_BOX(box), update_id_entry);
+    gtk_box_append(GTK_BOX(box), update_password_entry);
+    gtk_box_append(GTK_BOX(box), load_btn);
+
+    update_fields_box = gtk_box_new(GTK_ORIENTATION_VERTICAL, 5);
+
+    update_name   = gtk_entry_new();
+    update_age    = gtk_entry_new();
+    update_status = gtk_entry_new();
+    update_phone  = gtk_entry_new();
+
+    gtk_entry_set_placeholder_text(GTK_ENTRY(update_name),   "Name");
+    gtk_entry_set_placeholder_text(GTK_ENTRY(update_age),    "Age");
+    gtk_entry_set_placeholder_text(GTK_ENTRY(update_status), "Status");
+    gtk_entry_set_placeholder_text(GTK_ENTRY(update_phone),  "Phone");
+
+    GtkStringList *list = gtk_string_list_new(NULL);
+    gtk_string_list_append(list, "Yes");
+    gtk_string_list_append(list, "No");
+    update_parking = gtk_drop_down_new(G_LIST_MODEL(list), NULL);
+    gtk_drop_down_set_selected(GTK_DROP_DOWN(update_parking), 1);
+    g_object_unref(list);
+
+    update_radio_groom = gtk_check_button_new_with_label("Groom");
+    update_radio_bride = gtk_check_button_new_with_label("Bride");
+    update_radio_both  = gtk_check_button_new_with_label("Both");
+    gtk_check_button_set_group(GTK_CHECK_BUTTON(update_radio_bride), GTK_CHECK_BUTTON(update_radio_groom));
+    gtk_check_button_set_group(GTK_CHECK_BUTTON(update_radio_both),  GTK_CHECK_BUTTON(update_radio_groom));
+    gtk_check_button_set_active(GTK_CHECK_BUTTON(update_radio_groom), TRUE);
+
+    GtkWidget *save_btn = gtk_button_new_with_label("Update");
+    g_signal_connect(save_btn, "clicked", G_CALLBACK(update_guest), NULL);
+
+    GtkWidget *row = gtk_box_new(GTK_ORIENTATION_HORIZONTAL, 5);
+    gtk_box_append(GTK_BOX(row), gtk_label_new("Side"));
+    gtk_box_append(GTK_BOX(row), update_radio_groom);
+    gtk_box_append(GTK_BOX(row), update_radio_bride);
+    gtk_box_append(GTK_BOX(row), update_radio_both);
+
+    gtk_box_append(GTK_BOX(update_fields_box), update_name);
+    gtk_box_append(GTK_BOX(update_fields_box), update_age);
+    gtk_box_append(GTK_BOX(update_fields_box), update_status);
+    gtk_box_append(GTK_BOX(update_fields_box), update_phone);
+    gtk_box_append(GTK_BOX(update_fields_box), update_parking);
+    gtk_box_append(GTK_BOX(update_fields_box), row);
+    gtk_box_append(GTK_BOX(update_fields_box), save_btn);
+
+    gtk_box_append(GTK_BOX(box), update_fields_box);
+    gtk_widget_set_visible(update_fields_box, FALSE);
+
+    return box;
+}
+
+// ---------- MAIN ----------
+// after presenting of each page, we now present the entire interface
+void activate(GtkApplication *app, gpointer data) {
     GtkWidget *win = gtk_application_window_new(app);
-    gtk_window_set_title(GTK_WINDOW(win), "Wedding Guest System — Launcher");
-    gtk_window_set_default_size(GTK_WINDOW(win), 1100, 520);
-    gtk_window_set_resizable(GTK_WINDOW(win), FALSE);
+    gtk_window_set_title(GTK_WINDOW(win),"Person Manager");
+    gtk_window_set_default_size(GTK_WINDOW(win),600,400);
 
-    /* -- Root layout -- */
-    GtkWidget *root = gtk_box_new(GTK_ORIENTATION_VERTICAL, 0);
-    gtk_window_set_child(GTK_WINDOW(win), root);
+    GtkWidget *stack = gtk_stack_new();
+    gtk_widget_set_hexpand(stack,TRUE);
+    gtk_widget_set_vexpand(stack,TRUE);
 
-    /* -- Banner -- */
-    GtkWidget *banner = gtk_box_new(GTK_ORIENTATION_VERTICAL, 0);
-    gtk_widget_add_css_class(banner, "banner");
+    GtkWidget *switcher = gtk_stack_switcher_new();
+    gtk_stack_switcher_set_stack(GTK_STACK_SWITCHER(switcher),GTK_STACK(stack));
 
-    GtkWidget *eyebrow = gtk_label_new("WEDDING GUEST SYSTEM  ·  GROUP 3");
-    gtk_widget_add_css_class(eyebrow, "banner-eyebrow");
-    gtk_widget_set_halign(eyebrow, GTK_ALIGN_START);
+    gtk_stack_add_titled(GTK_STACK(stack),create_form_page(),"form","Form");
+    gtk_stack_add_titled(GTK_STACK(stack),create_display_page(),"display","Display");
+    gtk_stack_add_titled(GTK_STACK(stack),create_update_page(),"update","Update");
+    gtk_stack_add_titled(GTK_STACK(stack),create_delete_page(),"delete","Delete");
 
-    GtkWidget *title_lbl = gtk_label_new("Management Portal");
-    gtk_widget_add_css_class(title_lbl, "banner-title");
-    gtk_widget_set_halign(title_lbl, GTK_ALIGN_START);
+    GtkWidget *box = gtk_box_new(GTK_ORIENTATION_VERTICAL,5);
+    gtk_box_append(GTK_BOX(box),switcher);
+    gtk_box_append(GTK_BOX(box),stack);
 
-    GtkWidget *sub_lbl = gtk_label_new("Select a module to open");
-    gtk_widget_add_css_class(sub_lbl, "banner-sub");
-    gtk_widget_set_halign(sub_lbl, GTK_ALIGN_START);
-
-    GtkWidget *gold_rule = gtk_separator_new(GTK_ORIENTATION_HORIZONTAL);
-    gtk_widget_add_css_class(gold_rule, "gold-rule");
-
-    gtk_box_append(GTK_BOX(banner), eyebrow);
-    gtk_box_append(GTK_BOX(banner), title_lbl);
-    gtk_box_append(GTK_BOX(banner), sub_lbl);
-    gtk_box_append(GTK_BOX(banner), gold_rule);
-    gtk_box_append(GTK_BOX(root), banner);
-
-    /* -- Cards area -- */
-    GtkWidget *cards_area = gtk_box_new(GTK_ORIENTATION_HORIZONTAL, 0);
-    gtk_widget_add_css_class(cards_area, "cards-area");
-    gtk_widget_set_vexpand(cards_area, TRUE);
-
-    /* Person card */
-    const char *person_feats[] = {
-        "Add & save guests (CSV)",
-        "Live field validation",
-        "Update guest information",
-        "Password-protected delete",
-        "Auto-refresh display",
-        NULL
-    };
-    GtkWidget *card_person = make_card(
-        "\U0001F46B",
-        "MODULE 01",
-        "Person Management",
-        "Register, update and manage\n"
-        "every wedding guest with full\n"
-        "validation and CSV persistence.",
-        person_feats,
-        G_CALLBACK(on_launch_person)
-    );
-
-    /* Separator */
-    GtkWidget *vsep = gtk_separator_new(GTK_ORIENTATION_VERTICAL);
-    gtk_widget_add_css_class(vsep, "card-sep");
-
-    /* Category card */
-    const char *cat_feats[] = {
-        "Create named categories",
-        "Assign guests (nested list)",
-        "Sort by guest count",
-        "Update & delete categories",
-        "Remove guests from category",
-        NULL
-    };
-    GtkWidget *card_cat = make_card(
-        "\U0001F3F7",
-        "MODULE 02",
-        "Category Management",
-        "Organise guests into nested\n"
-        "linked-list categories such as\n"
-        "VIP, Family, Friends and more.",
-        cat_feats,
-        G_CALLBACK(on_launch_category)
-    );
-
-    /* Separator */
-    GtkWidget *vsep2 = gtk_separator_new(GTK_ORIENTATION_VERTICAL);
-    gtk_widget_add_css_class(vsep2, "card-sep");
-
-    /* Gift card */
-    const char *gift_feats[] = {
-        "Choose gift from 25 options",
-        "FCFA & EUR pricing",
-        "Identity verified by name",
-        "Password-protected display",
-        "Update & delete gift records",
-        NULL
-    };
-    GtkWidget *card_gift = make_card(
-        "\U0001F381",
-        "MODULE 03",
-        "Gift Management",
-        "Guests choose and register a gift\n"
-        "from a curated list, with live\n"
-        "pricing in FCFA and EUR.",
-        gift_feats,
-        G_CALLBACK(on_launch_gift)
-    );
-
-    gtk_box_append(GTK_BOX(cards_area), card_person);
-    gtk_box_append(GTK_BOX(cards_area), vsep);
-    gtk_box_append(GTK_BOX(cards_area), card_cat);
-    gtk_box_append(GTK_BOX(cards_area), vsep2);
-    gtk_box_append(GTK_BOX(cards_area), card_gift);
-    gtk_box_append(GTK_BOX(root), cards_area);
-
-    /* -- Footer -- */
-    GtkWidget *footer = gtk_box_new(GTK_ORIENTATION_HORIZONTAL, 0);
-    gtk_widget_add_css_class(footer, "footer-bar");
-
-    GtkWidget *foot_l = gtk_label_new("PASSWORD PROTECTED  ·  group3wed!");
-    gtk_widget_add_css_class(foot_l, "footer-label");
-    gtk_widget_set_halign(foot_l, GTK_ALIGN_START);
-    gtk_widget_set_hexpand(foot_l, TRUE);
-
-    GtkWidget *foot_r = gtk_label_new("Wedding Guest System  v1.0");
-    gtk_widget_add_css_class(foot_r, "footer-label");
-    gtk_widget_set_halign(foot_r, GTK_ALIGN_END);
-
-    gtk_box_append(GTK_BOX(footer), foot_l);
-    gtk_box_append(GTK_BOX(footer), foot_r);
-    gtk_box_append(GTK_BOX(root), footer);
-
-    /* -- Show window -- */
+    gtk_window_set_child(GTK_WINDOW(win),box);
     gtk_window_present(GTK_WINDOW(win));
 }
 
-/* ============================================================================
-   SECTION 5: MAIN FUNCTION
-   ========================================================================== */
-
-int main(int argc, char **argv)
-{
-    GtkApplication *app = gtk_application_new(
-        "org.group3.wedding.launcher",
-        G_APPLICATION_DEFAULT_FLAGS);
-
-    g_signal_connect(app, "activate", G_CALLBACK(activate), NULL);
-
-    int status = g_application_run(G_APPLICATION(app), argc, argv);
-
-    g_object_unref(app);
-
-    return status;
+int main(int argc,char **argv) {
+    GtkApplication *app = gtk_application_new("org.example.personmanager",G_APPLICATION_DEFAULT_FLAGS);
+    g_signal_connect(app,"activate",G_CALLBACK(activate),NULL);
+    return g_application_run(G_APPLICATION(app),argc,argv);
 }
