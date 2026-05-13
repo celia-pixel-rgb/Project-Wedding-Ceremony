@@ -6,7 +6,7 @@
 #include "person.h"
 
 
-const char *GUEST_CSV = "category.csv";  //file storing guest data
+const char *GUEST_CSV = "persons.csv";   //guests are stored in persons.csv
 const char *PASSWORD  = "group3wed!";  // the file password to insure the security and the confidentiality of information
 
 
@@ -152,25 +152,29 @@ void sort_categories_desc(Category **tete) {
 
 // the possibility to display all the guests 
 void display_all_guests(Category *tete, GString *out) {
+    /* Header â€“ printed once at the top of the display */
+    g_string_append_printf(out, "\n%-6s  %-30s  %s\n", "ID", "Guest Name", "Category");
+    g_string_append(out,        "------  ------------------------------  --------------------\n");
+
     while (tete) {
-        g_string_append_printf(out,
-            "\n[Category %d | %-20s]  (%d guest(s))\n",
-            tete->id, tete->code, tete->guest_count);
         GuestRef *ref = tete->guests;
         while (ref) {
             Guest g;
             if (find_guest_by_id(ref->guest_id, &g))
+                /* Only the three required columns: Guest ID | Guest Name | Category */
                 g_string_append_printf(out,
-                    "  [GuestID %d] %-20s | Age: %-3d | %-10s | %-12s | %-5s | Parking: %s\n", 
-                    g.id, g.name, g.age, g.status, // when the guest ID is found, then we present his information. among those information, we have: the guest name, his age, his ID, heis availability or not of the parking
-                    g.phone, side_to_string(g.side), g.parking);
+                    "%-6d  %-30s  %s\n",
+                    g.id, g.name, tete->code);
             else
                 g_string_append_printf(out,
-                    "  [GuestID %d] *** not found in guests.csv ***\n", ref->guest_id); //if the guest Id is not found in the Guest.csv
+                    "%-6d  %-30s  %s\n",
+                    ref->guest_id, "(not found in persons.csv)", tete->code);
             ref = ref->next;
         }
-        if (tete->guest_count == 0) g_string_append(out, "  (no guests)\n");
-        tete = tete->next; // we move forward
+        if (tete->guest_count == 0)
+            g_string_append_printf(out,
+                "  (o guests assigned to category)\n", tete->code);
+        tete = tete->next;
     }
 }
 
@@ -467,11 +471,11 @@ GtkWidget* create_assign_page() {
     assign_cat_id_entry   = gtk_entry_new();                    // we assign the category id with the gtk new entry
     assign_guest_id_entry = gtk_entry_new();
     gtk_entry_set_placeholder_text(GTK_ENTRY(assign_cat_id_entry),   "Category ID");     // "Guest ID must exist in guests.csv, No limit on guests per category, and Each guest reference is a linked list node.
-    gtk_entry_set_placeholder_text(GTK_ENTRY(assign_guest_id_entry), "Guest ID (from guests.csv)");
+    gtk_entry_set_placeholder_text(GTK_ENTRY(assign_guest_id_entry), "Guest ID (from persons.csv)");
     GtkWidget *btn = gtk_button_new_with_label("Assign Guest to Category");
     g_signal_connect(btn, "clicked", G_CALLBACK(cb_assign_guest), NULL);
     GtkWidget *info = gtk_label_new(
-        "Guest ID must exist in guests.csv.\n"
+        "Guest ID must exist in persons.csv.\n"
         "No limit on guests per category.\n"
         "Each guest reference is a linked list node.");
     gtk_box_append(GTK_BOX(assign_fields_box), gtk_label_new("Assign Guest ID to Category"));
@@ -597,7 +601,7 @@ void activate(GtkApplication *app, gpointer data) {
     GtkWidget *win      = gtk_application_window_new(app);
     GtkWidget *stack    = gtk_stack_new();
     GtkWidget *switcher = gtk_stack_switcher_new();
-    gtk_window_set_title(GTK_WINDOW(win), "Wedding � Category Manager [Nested List]");
+    gtk_window_set_title(GTK_WINDOW(win), "Wedding ï¿½ Category Manager [Nested List]");
     gtk_window_set_default_size(GTK_WINDOW(win), 680, 520);
     gtk_stack_switcher_set_stack(GTK_STACK_SWITCHER(switcher), GTK_STACK(stack));
     gtk_widget_set_hexpand(stack, TRUE);
