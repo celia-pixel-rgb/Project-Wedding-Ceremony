@@ -340,3 +340,321 @@ Guests choose from a **25-item catalogue** priced in FCFA & EUR. Depends on both
 <div align="center">
 
 ```
+╔══════════════════════════════════════════════════════════════════════════════╗
+║                                                                              ║
+║   ✦  W E D D I N G   F A B R I C S   C A T A L O G U E  ✦                  ║
+║                                                                              ║
+║        A curated selection of premium bridal & ceremonial textiles           ║
+║              woven into the Gift Module's offering system                    ║
+║                                                                              ║
+╚══════════════════════════════════════════════════════════════════════════════╝
+```
+
+</div>
+
+The Gift module has been extended with a **Wedding Fabrics** section — a dedicated catalogue of ceremonial and bridal textiles that guests may offer as a gift contribution. Each fabric is listed with its FCFA & EUR pricing and integrates seamlessly with the existing gift recording system.
+
+#### 📂 Critical — Fabric Files Location
+
+> ⚠️ **This is mandatory. The application will not find the fabrics without it.**
+
+Fabric assets (images, data files, or resource files related to the fabric catalogue) are located inside the **`gtk/fabrics/`** subfolder of the repository. This is their **canonical location** — the GTK gift GUI (`gift_gtk03.c`) loads them from this path at runtime:
+
+```
+wedding-guest-system/
+│
+├── 🧩 Source & Headers
+│   ├── gift.h / gift.c             # ← fabric functions declared & implemented here
+│   ├── gift_gtk03.c                # ← fabric GTK rendering — opens gtk/fabrics/ at runtime
+│   ├── person.h / person.c
+│   ├── category.h / category.c
+│   └── parking.h / parking.c
+│
+├── 🖥️  gtk/                        ← GTK 4 GUI folder
+│   ├── gtkcombinedmodules.c        # Main launcher — dark-navy/gold theme
+│   ├── gtkperson.c
+│   ├── gtkcategory.c
+│   ├── gtkparking.c
+│   │
+│   └── 🪡 fabrics/                 ← ✅ FABRIC ASSETS LIVE HERE — inside gtk/
+│       ├── fabrics.csv             # Fabric catalogue (id · name · price_fcfa · price_eur · colour · origin)
+│       └── fabric_images/          # Fabric preview thumbnails — PNG/JPG
+│           ├── fabric_01.png
+│           ├── fabric_02.png
+│           └── ...
+│
+├── 📂 csv/
+│   ├── persons.csv
+│   ├── category.csv
+│   ├── gifts.csv
+│   ├── parking_spot.csv
+│   └── parking_booking.csv
+│
+└── 🔨 Makefile
+```
+
+> 🔴 **The `fabrics/` folder must remain inside `gtk/` — do not move it to the project root or any other location.** The C code opens fabric resources using the **relative path `gtk/fabrics/fabrics.csv`** from the working directory. Launching the binary from outside the project root, or relocating the `fabrics/` folder, will cause the fabric catalogue to silently fail to load.
+
+#### 🧵 Why Co-location Matters
+
+The Gift module opens `fabrics.csv` with a **relative file path**:
+
+```c
+FILE *f = fopen("gtk/fabrics/fabrics.csv", "r");  // path relative to project root
+```
+
+This means:
+
+|Scenario                                                    |Result                                                         |
+|------------------------------------------------------------|:-------------------------------------------------------------:|
+|`gtk/fabrics/fabrics.csv` exists at project root level      |✅ Loads correctly                                              |
+|`fabrics/` folder moved out of `gtk/` (e.g. to project root)|❌ `NULL` — path broken                                         |
+|Binary launched from outside the project root               |❌ `NULL` — relative path broken                                |
+|`gtk/fabrics/fabric_images/` folder missing (GTK mode)      |⚠️ Fabric images will not render, but catalogue text still works|
+
+
+> 💡 **Best practice:** always `cd` into the project root before running `make` or any binary, so relative paths like `gtk/fabrics/fabrics.csv` resolve correctly. The **MSYS2 UCRT64** terminal and standard Linux terminals both support this naturally.
+
+#### 🌸 Fabric Catalogue — Available Items
+
+The fabric catalogue ships with the following ceremonial textiles (editable via `fabrics.csv`):
+
+|ID |Fabric Name            |Colour / Style         |Price (FCFA)|Price (EUR)|
+|:-:|-----------------------|-----------------------|-----------:|----------:|
+|F01|**Kente Cloth**        |Gold & Green · Royal   |85 000      |129.58     |
+|F02|**Bogolan (Mud Cloth)**|Earth tones · Artisanal|45 000      |68.59      |
+|F03|**Ankara Print**       |Vivid multicolour      |22 000      |33.54      |
+|F04|**Silk Bridal Lace**   |Ivory · Off-white      |120 000     |182.93     |
+|F05|**Organza Sheer**      |Blush Pink · Delicate  |38 000      |57.94      |
+|F06|**Damask Brocade**     |Champagne Gold         |95 000      |144.83     |
+|F07|**Aso-Oke**            |Cream & Burgundy       |67 000      |102.14     |
+|F08|**Chiffon Veil Fabric**|Pure White · Flowing   |30 000      |45.73      |
+
+
+> 🎨 Fabric items are appended to the main gift catalogue as items **F01–F08**, fully compatible with the existing `GiftRecord` struct and `gifts.csv` schema.
+
+#### 🔧 Fabric-Specific Functions — `gift.h` / `gift.c`
+
+|Function                           |Returns|Description                                                                   |
+|-----------------------------------|:-----:|------------------------------------------------------------------------------|
+|`initialize_fabric_catalogue(list)`|`void` |Loads fabric items from `fabrics.csv` and appends them to the gift linked list|
+|`display_fabric_menu()`            |`void` |Prints the fabric sub-catalogue with FCFA & EUR prices                        |
+|`is_fabric_item(item_id)`          |`bool` |Returns `true` if the item ID starts with `"F"`                               |
+
+#### 🖥️ GTK Integration — `gift_gtk03.c`
+
+In the GTK interface, fabric items appear as a **dedicated tab** within the Gift Management window:
+
+- A scrollable `GtkListBox` renders each fabric with name, price, and colour swatch
+- Fabric images are loaded from `gtk/fabrics/fabric_images/` (relative to the project root) using `gtk_picture_new_for_filename()`
+- If `gtk/fabrics/fabric_images/` is absent, a **placeholder tile** is shown — the rest of the GUI is unaffected
+
+> 🪟 **MSYS2 UCRT64 users:** GTK 4 and all required libraries (`mingw-w64-ucrt-x86_64-gtk4`, `gcc`, `pkg-config`) are installed into `C:\msys64\ucrt64\`. When you run binaries from the UCRT64 terminal, these libraries are automatically on the `PATH` — **you never need to copy DLLs manually**. Fabric assets, however, are loaded at runtime via relative paths and are therefore **your responsibility** to keep co-located in the project root. A missing DLL breaks the whole program; a missing `gtk/fabrics/fabrics.csv` silently disables only the fabric tab.
+
+#### ✅ Pre-launch Checklist for Fabric Features
+
+Before running `./launcher` or `./gift_gtk03`, confirm:
+
+- [ ] `gtk/fabrics/fabrics.csv` exists inside the `gtk/fabrics/` subfolder
+- [ ] You are running the binary **from the project root** (`cd wedding-guest-system && ./launcher`)
+- [ ] MSYS2 UCRT64 terminal is used on Windows (not PowerShell, CMD, or MINGW32)
+- [ ] GTK 4 libraries verified: `pkg-config --modversion gtk4` prints `4.x.x`
+- [ ] *(Optional)* `gtk/fabrics/fabric_images/` folder is present for image previews in GTK mode
+
+-----
+
+### 🚗 Module 04 — Parking Management
+
+**Files:** `parking.h`  ·  `parking.c`  ·  `gtkparking.c`
+
+Admin configures up to **200 spots**. Guests with `parking = "Yes"` book time slots — the system detects overlaps and wraps correctly past midnight.
+
+#### Data Structures
+
+|Symbol      |Kind    |Fields                                                                                                              |
+|------------|:------:|--------------------------------------------------------------------------------------------------------------------|
+|`SpotConfig`|`struct`|`spot_id` (1-based) · `max_hours`                                                                                   |
+|`Booking`   |`struct`|`booking_id` · `spot_id` · `guest_name[64]` · `start_hour` · `start_min` · `duration_hours` · `end_hour` · `end_min`|
+
+#### `check_person_parking()` — Return Codes
+
+|Code|Constant            |Meaning                              |
+|:--:|--------------------|-------------------------------------|
+|`0` |`PERSON_NOT_FOUND`  |Name not found in `persons.csv`      |
+|`1` |`PERSON_NO_PARKING` |Guest exists, but parking = `"No"`   |
+|`2` |`PERSON_HAS_PARKING`|Guest exists with parking = `"Yes"` ✅|
+
+#### CLI Functions — `parking.c`
+
+|Function                                                       |Returns   |Description                                                         |
+|---------------------------------------------------------------|:--------:|--------------------------------------------------------------------|
+|`to_minutes(h, m)`                                             |`int`     |Converts hour:minute → minutes since midnight (e.g. `9:30 → 570`)   |
+|`add_hours(sh, sm, dur_h, *eh, *em)`                           |`void`    |Adds whole hours to start time, wraps correctly past midnight       |
+|`intervals_overlap(as, ae, bs, be)`                            |`int`     |Returns `1` if `[as, ae)` overlaps `[bs, be)`                       |
+|`save_spot_config(num_spots, max_hours)`                       |`void`    |Writes admin config to `parking_spot.csv`                           |
+|`load_spot_config(*num_spots, *max_hours)`                     |`int`     |Reads config; returns `1` on success, `0` if not found              |
+|`append_booking(b)`                                            |`void`    |Appends one `Booking` row to `parking_booking.csv`                  |
+|`next_booking_id()`                                            |`int`     |Returns `max_id + 1`; returns `1` for empty file                    |
+|`load_bookings(*out_count)`                                    |`Booking*`|Loads all rows into dynamic array — caller must `free()`            |
+|`cancel_booking_by_id(booking_id)`                             |`int`     |Removes matching row; returns `1` on success                        |
+|`cancel_bookings_for_guest(guest_name)`                        |`int`     |Removes **all** bookings for guest; returns count removed           |
+|`check_person_parking(name)`                                   |`int`     |Case-insensitive lookup; returns `PERSON_*` code                    |
+|`find_available_spot(req_start, req_end, num_spots)`           |`int`     |Returns first non-overlapping spot number, or `-1` if full          |
+|`guest_has_overlapping_booking(name, *out, req_start, req_end)`|`int`     |Returns `1` if conflict found; fills `*out` with conflicting booking|
+|`print_all_spots(num_spots)`                                   |`void`    |Displays `FREE` / `OCCUPIED` status for every configured spot       |
+|`print_guest_bookings(guest_name)`                             |`void`    |Lists all bookings in `parking_booking.csv` for a guest             |
+|`run_admin_menu()`                                             |`void`    |🔑 Configure spots & max hours, view occupancy, cancel bookings by ID|
+|`run_guest_menu(guest_name, num_spots, max_hours)`             |`void`    |🔓 Book a slot, view own bookings, cancel own booking                |
+
+#### GTK Parking Panels — `gtkparking.c`
+
+|Panel          |Access|Features                                                                                              |
+|---------------|:----:|------------------------------------------------------------------------------------------------------|
+|**Admin Panel**|🔑     |Set spot count & max hours · real-time occupancy via `g_timeout_add()` · cancel any booking by ID     |
+|**Guest Panel**|🔓     |Name entry → verified vs `persons.csv` → choose start time & duration → auto-assigned spot → confirmed|
+
+-----
+
+### 💌 Module 05 — Invitation Manager (`gtkinvitations.c`)
+
+**File:** `gtkinvitations.c`
+
+**Dependencies:** `person.h`  ·  `libcurl`  ·  `libcairo`  ·  `libm`
+
+The **Invitation Manager** is a fully self-contained GTK 4 module that allows users to design, preview, save, and send personalised wedding invitations. Unlike the other modules — which offer both a CLI and a GTK interface — this module is **GTK 4 only**, making full use of Cairo vector graphics to render elegant, print-ready invitation cards directly inside the application.
+
+The module opens with a **password-protected login screen** (`login_bg.jpg` background) styled in the system’s dark-navy and gold theme. After authentication, a four-tab main window becomes available.
+
+-----
+
+#### Login Screen
+
+|Feature          |Detail                                                             |
+|-----------------|-------------------------------------------------------------------|
+|Background image |`invitation_bg.jpg` — loaded from the `Backgrounds` folder        |
+|Authentication   |System password `group3wed!` — shared with all protected operations|
+|Fullscreen toggle|Button to switch between fullscreen and windowed mode              |
+|CSS theme        |Dark navy `rgba(10,18,40,0.88)` card with gold `#c8a850` accents   |
+
+
+> ⚠️ `invitation_bg.jpg` must be placed in the `Backgrounds` folder alongside the other module backgrounds. If it is missing, the login window opens without a background but remains fully functional.
+
+-----
+
+#### Data Structures
+
+|Symbol       |Kind    |Fields                                                                                                                                                                                              |
+|-------------|:------:|----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
+|`Theme`      |`struct`|`name` · `bg_r/g/b` · `accent_r/g/b` · `text_r/g/b` · `header_r/g/b`                                                                                                                                |
+|`InvData`    |`struct`|`husband[100]` · `h_parents[120]` · `wife[100]` · `w_parents[120]` · `venue[200]` · `date[30]` · `dresscode[80]` · `t_council[40]` · `t_church[40]` · `t_reception[40]` · `msg[500]` · `theme` (int)|
+|`MailPayload`|`struct`|`data` · `pos` — used internally by the libcurl read callback                                                                                                                                       |
+
+-----
+
+#### Colour Themes
+
+Five built-in themes are available via a dropdown on the Create Invitation tab. The selected theme is applied **live** to the card preview and saved with the invitation record.
+
+|Index|Theme Name       |Background   |Accent       |Notes                                 |
+|:---:|-----------------|-------------|-------------|--------------------------------------|
+|0    |**Royal Gold**   |Cream ivory  |Gold         |Default theme — dark navy header      |
+|1    |**Rose Pink**    |Blush        |Deep rose    |Ideal for romantic/feminine aesthetics|
+|2    |**Midnight Blue**|Ice blue     |Midnight blue|Elegant and formal                    |
+|3    |**Emerald Green**|Mint         |Emerald      |Fresh, garden-party style             |
+|4    |**Lavender**     |Pale lavender|Violet       |Soft and contemporary                 |
+
+-----
+
+#### Cairo Card Renderer — `draw_card_from_data()`
+
+The card preview is rendered entirely using the **Cairo 2D graphics library** at a portrait A5 aspect ratio (595 × 840). Every element is drawn programmatically — no image assets are required for the card itself.
+
+|Layer             |Description                                                     |
+|------------------|----------------------------------------------------------------|
+|Card background   |Themed cream/ivory fill with a soft radial warm wash            |
+|Drop shadow       |Semi-transparent grey offset rectangle for depth                |
+|Gold border       |Double-line rounded rectangle in the accent colour              |
+|Mandala medallion |Subtle watermark lace pattern at the top centre                 |
+|Marigold garland  |Curved vine with orange and red blooms across the top           |
+|Side hanging vines|Botanical sprigs with leaves running down both sides            |
+|Diya lamps        |Terracotta oil lamps with animated flame at the bottom corners  |
+|Pink lotus        |Decorative flower at the bottom centre                          |
+|Calligraphic text |Couple names in large italic serif, parents lines, event details|
+|Decorative rules  |Thin gold horizontal dividers between text sections             |
+
+-----
+
+#### Functions
+
+**Utility Functions**
+
+|Function                                      |Returns|Description                                                        |
+|----------------------------------------------|:-----:|-------------------------------------------------------------------|
+|`invitation_get_next_id()`                    |`int`  |Scans `invitations.csv` for the highest ID; returns `max + 1`      |
+|`load_guests_from_csv()`                      |`void` |Loads up to 500 guest names and e-mail addresses from `persons.csv`|
+|`rebuild_guest_dropdown()`                    |`void` |Repopulates the guest `GtkDropDown` from the in-memory name array  |
+|`get_textview_text(tv, buf, size)`            |`void` |Extracts plain text from a `GtkTextView` into a C string buffer    |
+|`card_line(buf, bufsize, inner, text)`        |`void` |Builds a UTF-8–safe bordered card line with correct column padding |
+|`card_line_centred(buf, bufsize, inner, text)`|`void` |Same as `card_line()` but centres the text within the column width |
+
+**Cairo Drawing Helpers**
+
+|Function                                              |Returns|Description                                                     |
+|------------------------------------------------------|:-----:|----------------------------------------------------------------|
+|`draw_rounded_rect(cr, x, y, w, h, r)`                |`void` |Draws a rounded-corner rectangle path                           |
+|`draw_text_centred(cr, cx, y, text)`                  |`void` |Renders text horizontally centred at the given coordinates      |
+|`draw_thin_rule(cr, cx, y, half_len, r, g, b)`        |`void` |Draws a thin decorative horizontal rule                         |
+|`draw_leaf(cr, ox, oy, angle, scale, r, g, b, alpha)` |`void` |Draws a single stylised leaf using a cubic Bézier curve         |
+|`draw_floral_sprig(cr, bx, by, scale, r, g, b, alpha)`|`void` |Draws a three-leaf botanical sprig on a centre stem             |
+|`draw_oval_frame(cr, cx, cy, rw, rh, ar, ag, ab)`     |`void` |Draws the double-line oval/rounded-rectangle decorative border  |
+|`draw_card_from_data(cr, width, height, inv)`         |`void` |Master card renderer — draws all layers from an `InvData` struct|
+
+**GTK Callbacks**
+
+|Function                   |Access|Description                                                                                                    |
+|---------------------------|:----:|---------------------------------------------------------------------------------------------------------------|
+|`on_preview_draw()`        |🔓     |Live preview draw callback — populates `InvData` from form fields and calls `draw_card_from_data()`            |
+|`on_field_changed()`       |🔓     |Triggers a preview redraw whenever any `GtkEntry` field is modified                                            |
+|`on_message_changed()`     |🔓     |Triggers a preview redraw when the personal message `GtkTextView` changes                                      |
+|`on_theme_changed()`       |🔓     |Updates `current_theme` and redraws the preview when the theme dropdown changes                                |
+|`on_save_invitation()`     |🔓     |Validates form fields and appends one record to `invitations.csv`; clears the form on success                  |
+|`on_refresh_display()`     |🔑     |Password-protected — reads `invitations.csv` and renders each saved invitation as a card inside the Display tab|
+|`on_disp_card_draw()`      |🔑     |Draw callback for individual saved invitation cards in the Display tab                                         |
+|`on_search_guest_emails()` |🔓     |Reloads `persons.csv` and populates a scrollable guest list showing names and e-mail addresses                 |
+|`on_guest_row_activated()` |🔓     |Fills the recipient e-mail entry when a guest row is clicked in the Send tab                                   |
+|`on_send_email()`          |🔑     |Password-protected — looks up an invitation by ID and sends it to a single recipient via Gmail SMTP            |
+|`on_send_to_all_guests()`  |🔑     |Password-protected — sends the same invitation to every guest in `persons.csv` that has an e-mail address      |
+|`on_delete_invitation()`   |🔑     |Password-protected — removes an invitation record by ID using a temp-file swap                                 |
+|`on_login_button_clicked()`|—     |Validates the password on the login screen; opens the main window on success                                   |
+|`show_login_window()`      |—     |Builds and presents the login overlay window; entry point called by `GApplication::activate`                   |
+
+**E-mail Functions (libcurl)**
+
+|Function                                                    |Returns   |Description                                                                     |
+|------------------------------------------------------------|:--------:|--------------------------------------------------------------------------------|
+|`curl_read_cb(ptr, size, nmemb, userp)`                     |`size_t`  |libcurl read callback — streams the RFC 2822 message body to the SMTP connection|
+|`send_gmail(sender, app_password, recipient, subject, body)`|`CURLcode`|Sends one e-mail via Gmail SMTP over TLS/SSL (`smtps://smtp.gmail.com:465`)     |
+
+-----
+
+#### Application Tabs
+
+|Tab                    |Access|Description                                                                          |
+|-----------------------|:----:|-------------------------------------------------------------------------------------|
+|**Create Invitation**  |🔓     |Form with all invitation fields + live Cairo card preview on the right               |
+|**Display Invitations**|🔑     |Scrollable gallery of all saved invitations rendered as decorated cards              |
+|**Send E-mail**        |🔑     |Send a saved invitation by ID to one recipient or to all guests with e-mail addresses|
+|**Delete Invitation**  |🔑     |Remove a saved invitation record by its ID                                           |
+
+-----
+
+#### CSV File Format — `invitations.csv`
+
+Each saved invitation is stored as a single CSV row:
+
+```
+id, husband, h_parents, wife, w_parents, venue, date, theme_index,
+dresscode, time_council, time_church, time_reception, message
+```
+
+**Field notes:**
